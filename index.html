@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- Include meta tag to ensure proper rendering and touch zooming -->
+<meta charset="ISO-8859-1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="apple-mobile-web-app-capable" content="yes" />
+   
+
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script>
+    $(document).bind('mobileinit',function(){
+        $.mobile.changePage.defaults.changeHash = false;
+        $.mobile.hashListeningEnabled = false;
+        $.mobile.pushStateEnabled = false;
+    });
+</script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> 
+
+<!-- Load Leaflet from CDN-->
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.css" />
+  <script src="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.js"></script>
+
+  <!-- Load Esri Leaflet from CDN -->
+   <script src="http://cdn.jsdelivr.net/leaflet.esri/2.0.0-beta.7/esri-leaflet.js"></script>
+   <script type="text/javascript" src="http://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js"></script> 
+   <link rel="stylesheet" href="http://cdn.jsdelivr.net/leaflet.esri.geocoder/2.0.2/esri-leaflet-geocoder.css">
+   <script src="http://cdn.jsdelivr.net/leaflet.esri.geocoder/2.0.2/esri-leaflet-geocoder.js"></script>
+   
+   
+    <link rel="stylesheet" href="http://leaflet.github.io/Leaflet.draw/leaflet.draw.css"/>
+    <script src="http://leaflet.github.io/Leaflet.draw/leaflet.draw.js"></script>
+     <link href='http://fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+     <link rel="stylesheet" media="screen" href="css/styles.css" type="text/css" />
+    <link rel="stylesheet" media="screen" href="css/dga.css" type="text/css"  />
+    <link rel="stylesheet" href="css/mapa.css" type="text/css" />
+	 <link rel="stylesheet" href="css/FeedEk.css" type="text/css" />
+    <script type="text/javascript" src="js/FeedEk.js"></script>
+    <script type="text/javascript" src="js/mapa.js"></script>   
+	<!-- <script src="cordova.js"></script>    --> 
+
+</head>
+
+<body>
+
+<div data-role="page" id="index" class="ui-responsive-panel">
+
+  <div  id="header" data-role="header" data-position="fixed" >
+    
+			<img  id="logodga" src="img/logoInternet.jpg" class="ajusteIZ" alt="Departmento Desarrollo Rural y Sostenibilidad"
+						 title="Departmento Desarrollo Rural y Sostenibilidad"/>
+	
+	  
+		
+			<img id="logoinaga2" src="img/logoweb_Inaga_2.jpg" class="ajuste" alt="INAGA. Instituto Aragon&eacute;s de Gesti&oacute;n Ambiental."
+				 title="INAGA. Instituto Aragon&eacute;s de Gesti&oacute;n Ambiental."/>
+		     <h1>Instituto Aragon&eacute;s de Gesti&oacute;n Ambiental.</h1>
+  
+  </div>
+
+  <!-- <div data-role="content"> -->
+  <div id="main" data-role="main" class="ui-content">
+    
+    
+    <!--  <fieldset class="mapa">		
+		<legend class="legend">Mapa</legend> -->
+		
+		<div id="map">
+		    <a href="#myPanel" class="ui-btn ui-btn-inline ui-corner-all ui-shadow leaflet-control ajuste" data-mini="true">Utilidades</a>	
+		   
+			        
+		<!-- -- fin de map	 -->			 
+		</div>     
+			
+	<div data-role="panel" id="myPanel" data-display="overlay" data-display="overlay" data-position="right" > 
+   
+            
+			<div  data-role="collapsibleset" class="ajuste leaflet-control" > 
+			
+			    <div  data-role="collapsible" data-mini="true"  data-iconpos="right" id="panelinfo">
+								 <h2>Informaci&oacute;n</h2>
+								 <div id="panel" class="yscroll">
+									 <div id="info" class="info">Datos Orto y Ocaso.</div>
+									 <div id="cotos" class="info">Cotos radio 1Km.</div>
+									 <div id="municipios" class ="info">Municipios afectados.</div>
+								 </div>
+				</div>		
+			
+			
+			
+			
+				<div  data-role="collapsible" data-mini="true" data-iconpos="right" >
+				
+				        
+				        <h2>Herramientas<h2>
+						<div data-role="controlgroup" data-type="vertical" data-mini="true">
+						  
+						
+						  <input type="button" value="Inicial"  id="zoonini" data-icon="home"  title="Zoom Inicial" alt="zoom inicial"/>
+						  <input type="button" value="zoom Anterior" id="zoonant" data-icon="arrow-l"  title="Zoom Anterior"alt="zoom anterior"/>
+						  <input type="button" value="Localizaci&oacute;n"  id="locate" data-icon="location" title="localizacion"alt="Mi posicion"/>  
+                          <input type="button" value="Borrar"  id="clear" data-icon="delete"  title="Limpiar mapa"/>						  
+						
+						
+					   <!-- 
+						  <input type="image" id="clear" src="img/clean.png" width="30" height="30" title="Limpiar mapa" alt="Limpiar"/>
+						  <input type="image" id="zoonini" src="img/fullExtent.png" width="30" height="30" title="Zoom Inicial" alt="zoom inicial"/>
+						  <input type="image" id="zoonant" src="img/zoomLast.png" width="30" height="30"  title="Zoom Anterior"alt="zoom anterior"/>
+						  <input type="image" id="locate" src="img/ico_localizacion.png" width="30" height="30"  title="localizacion"alt="Mi posicion"/>    -->                         
+													
+					 
+						</div>
+				</div>
+					
+				   
+							<div data-role="collapsible" data-mini="true" data-iconpos="right" id="resultados">
+							     <h2>Datos B&uacute;squedas</h2>
+								 <div id="error" class="error negita"> </div>	
+								 <div class="ui-field-contain">
+									    							
+										<label for="Matricula" class="negrita">Coto:</label>
+										<input type="search"  name = "matricula" title = "matricula" id="matricula" size='6' maxlength='6' label="matricula" data-mini="true">              
+										<label for="Fecha" class="negrita">Fecha:</label>
+										<input type="date" name="fecha" title="Fecha Accidente" label="fecha" id="fecha" size = '12' maxlength='12' data-mini="true" >
+										
+
+									    <input type="button" value="Buscar" id="verinfo" data-icon="search" data-mini="true" data-inline="true" >
+									    
+							     </div>
+								 
+							</div>	 
+								 
+								 
+			</div>	
+        </div>							  
+	<!-- </fieldset>    -->
+   
+	<!-- <form class="ui-filterable">
+     <input id="myFilter" data-type="search">
+    </form>
+
+	<ul data-role="listview" data-filter="true" data-input="#myFilter">
+	  <li><a href="#">Adele</a></li>
+	  <li><a href="#">Billy</a></li>
+	  <li><a href="#">Calvin</a></li>
+	</ul>
+  </div> -->
+
+  
+  
+<
+</div>
+ <script> 
+        $(function(){  
+		    $.mobile.loading( 'show', { theme: "a", text: "Cargando...", textonly: false,textVisible:true });
+			
+		      var element = $('#header');
+
+             var altura = element.height();
+			 element = $('#main');
+			 element.css("top", altura + 1);
+			 $fecha=$('#fecha');
+			 if ($fecha[0].type!="date"){
+			       $.datepicker.regional['es'] = {
+						closeText: 'Cerrar',
+						<!-- prevText: ' nextText: 'Sig>', -->
+						currentText: 'Hoy',
+						monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+						'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+						monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+						dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+						dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié;', 'Juv', 'Vie', 'Sáb'],
+						dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'],
+						weekHeader: 'Sm',
+						dateFormat: 'dd/mm/yy',
+						firstDay: 1,
+						isRTL: false,
+						showMonthAfterYear: false,
+						yearSuffix: ''
+						};
+			       $.datepicker.setDefaults($.datepicker.regional["es"]);
+				   $fecha.datepicker();
+			 }
+		     document.getElementById("fecha").value = hoy();
+			 touchScroll('panel');
+			 logos();
+			 initMap(); 
+			 setTimeout(function(){ $.mobile.loading( 'hide'); }, 2000);
+	 	});  	 
+	</script>
+</body>
+</html>

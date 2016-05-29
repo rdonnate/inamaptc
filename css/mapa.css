@@ -1,0 +1,135 @@
+/* 
+    Document   : mapa
+    Created on : 24-abr-2015, 9:46:05
+    Author     : PORTATIL
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+ 
+
+.ui-icon-fullextent {
+background-image: url("../img/fullExtent.png");
+}
+.ui-icon-clean  {
+background-image: url("../img/clean.png");
+}
+
+.ui-icon-zoomlast {
+background-image: url("../img/zoomLast.png");
+}
+
+.ui-icon-localizacion {
+background-image: url("../img/ico_localizacion.png");
+}
+													
+
+.ui-content {
+    position: absolute;
+    top: 43px;
+    right: 0;
+    bottom: 0px;
+    left: 0;
+    padding: 0 !important;
+	
+}  
+
+.alturaCabecera {
+   height: 8%
+  }
+.ajuste {
+    	float:right;
+}
+.ajusteIZ{
+    	float:left;
+}
+.yscroll {
+      height:375px;
+      overflow:auto;
+      
+}
+.info {
+  padding: 1px;
+  font-weight: bold;
+  color: #000000;
+  background-color: #e6f2ff;
+  opacity:0.9;
+ 
+ }
+  
+#myPanel {
+ width:25em;
+  background-color: #e6f2ff;
+  opacity:0.8;
+ 
+ }
+  
+.mapa {
+  width:100%;
+  height: 100%;
+  margin:1%;
+  border:1px solid #013253;
+  font-family: verdana,helvetica,arial,sans-serif;
+  font-size:90%;
+ }
+.legend {
+    color:#013253;
+    font-family: verdana,helvetica,arial,sans-serif;
+    font-size:100%;
+    font-weight: bold;
+}
+					
+.fieldset {
+  width:73%;
+  margin:1%;
+  border:1px solid #013253;
+  font-family: verdana,helvetica,arial,sans-serif;
+  font-size:90%;
+ }
+#botones {
+    float : right;
+}
+#coordenadas {
+  width:20%;
+  margin:1%;
+  border:1px solid #013253;
+  font-family: verdana,helvetica,arial,sans-serif;
+  font-size:90%;
+ }
+#presentacion {
+background-color:#013253;
+color:white;
+font-weight: bold;
+clear:both;
+text-align:center;
+padding:1px; 
+}	
+#footer {
+background-color:#013253;
+color:white;
+font-weight: bold;
+clear:both;
+text-align:center;
+padding:1px; 
+}	
+ #logodga{
+width: 20%;
+
+	}
+#logoinaga2{
+width: 15%;
+
+	} 
+#logoinaga {
+width: 20%;
+
+}
+
+#map { height:  97%; }
+#pnlInstructions { background-color: #fff; padding: 10px; opacity:0.7 }
+#pnlInstructions h2 { margin: 0; font-weight: bold;}
+
