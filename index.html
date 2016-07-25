@@ -24,6 +24,8 @@
 
 <!-- Load Leaflet from CDN-->
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.css" />
+  <link rel="stylesheet" media="screen" href="css/leaflet-measure.css" type="text/css"  />
+  
   <script src="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.js"></script>
 
   <!-- Load Esri Leaflet from CDN -->
@@ -42,6 +44,9 @@
     <link rel="stylesheet" href="css/mapa.css" type="text/css" />
 	 <link rel="stylesheet" href="css/FeedEk.css" type="text/css" />
     <script type="text/javascript" src="js/FeedEk.js"></script>
+	<script type="text/javascript" src="js/wms.js"></script>   
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.14/proj4.js"></script>
+	<script src="js/leaflet-measure.min.js"></script>
     <script type="text/javascript" src="js/mapa.js"></script>   
 	<!-- <script src="cordova.js"></script>    --> 
 
@@ -52,36 +57,51 @@
 <div data-role="page" id="index" class="ui-responsive-panel">
 
   <div  id="header" data-role="header" data-position="fixed" >
-    
-			<img  id="logodga" src="img/logoInternet.jpg" class="ajusteIZ" alt="Departmento Desarrollo Rural y Sostenibilidad"
-						 title="Departmento Desarrollo Rural y Sostenibilidad"/>
-	
-	  
-		
-			<img id="logoinaga2" src="img/logoweb_Inaga_2.jpg" class="ajuste" alt="INAGA. Instituto Aragon&eacute;s de Gesti&oacute;n Ambiental."
-				 title="INAGA. Instituto Aragon&eacute;s de Gesti&oacute;n Ambiental."/>
-		     <h1>Instituto Aragon&eacute;s de Gesti&oacute;n Ambiental.</h1>
+              <h1>INAGA</h1>
+			  <h1>Terrenos Cineg&eacute;ticos</h1>
+		     <a href="#myMapa" class="ui-btn ui-btn-inline ui-corner-all ui-shadow   ui-icon-road ui-btn-icon-left" data-mini="true">Mapa</a>	
+			 <a href="#myPanel" class="ui-btn ui-btn-inline ui-corner-all ui-shadow  ui-icon-power ui-btn-icon-left" data-mini="true">Herramientas</a>	
+			
   
   </div>
 
   <!-- <div data-role="content"> -->
-  <div id="main" data-role="main" class="ui-content">
+<div id="main" data-role="main" class="ui-content">
     
     
     <!--  <fieldset class="mapa">		
 		<legend class="legend">Mapa</legend> -->
-		
+				
 		<div id="map">
-		    <a href="#myPanel" class="ui-btn ui-btn-inline ui-corner-all ui-shadow leaflet-control ajuste" data-mini="true">Utilidades</a>	
+		    <!--  <a href="#myPanel" class="ui-btn ui-btn-inline ui-corner-all ui-shadow leaflet-control ajuste" data-mini="true">Utilidades</a> -->	
 		   
 			        
 		<!-- -- fin de map	 -->			 
 		</div>     
-			
+	<div data-role="panel" id="myMapa" data-display="overlay" data-position="left" > 
+	    <div  data-role="collapsible" data-mini="true" data-iconpos="right" >
+				
+				        
+				        <h2>Herramientas Mapa<h2>
+						<div data-role="controlgroup" data-type="vertical" data-mini="true">
+						  
+						
+						  <input type="button" value="Inicial"  id="zoonini" data-icon="home"  title="Zoom Inicial" alt="zoom inicial"/>
+						  <input type="button" value="zoom Anterior" id="zoonant" data-icon="arrow-l"  title="Zoom Anterior"alt="zoom anterior"/>
+						  <input type="button" value="Localizaci&oacute;n"  id="locate" data-icon="location" title="localizacion"alt="Mi posicion"/>  
+                          <input type="button" value="Borrar"  id="clear" data-icon="delete"  title="Limpiar mapa"/>						  
+						
+											 
+						</div>
+	    </div>
+		
+	</div>
+	 
 	<div data-role="panel" id="myPanel" data-display="overlay" data-display="overlay" data-position="right" > 
    
             
 			<div  data-role="collapsibleset" class="ajuste leaflet-control" > 
+			   
 			
 			    <div  data-role="collapsible" data-mini="true"  data-iconpos="right" id="panelinfo">
 								 <h2>Informaci&oacute;n</h2>
@@ -95,66 +115,59 @@
 			
 			
 			
-				<div  data-role="collapsible" data-mini="true" data-iconpos="right" >
 				
-				        
-				        <h2>Herramientas<h2>
-						<div data-role="controlgroup" data-type="vertical" data-mini="true">
-						  
-						
-						  <input type="button" value="Inicial"  id="zoonini" data-icon="home"  title="Zoom Inicial" alt="zoom inicial"/>
-						  <input type="button" value="zoom Anterior" id="zoonant" data-icon="arrow-l"  title="Zoom Anterior"alt="zoom anterior"/>
-						  <input type="button" value="Localizaci&oacute;n"  id="locate" data-icon="location" title="localizacion"alt="Mi posicion"/>  
-                          <input type="button" value="Borrar"  id="clear" data-icon="delete"  title="Limpiar mapa"/>						  
-						
-						
-					   <!-- 
-						  <input type="image" id="clear" src="img/clean.png" width="30" height="30" title="Limpiar mapa" alt="Limpiar"/>
-						  <input type="image" id="zoonini" src="img/fullExtent.png" width="30" height="30" title="Zoom Inicial" alt="zoom inicial"/>
-						  <input type="image" id="zoonant" src="img/zoomLast.png" width="30" height="30"  title="Zoom Anterior"alt="zoom anterior"/>
-						  <input type="image" id="locate" src="img/ico_localizacion.png" width="30" height="30"  title="localizacion"alt="Mi posicion"/>    -->                         
-													
-					 
-						</div>
-				</div>
-					
-				   
-							<div data-role="collapsible" data-mini="true" data-iconpos="right" id="resultados">
-							     <h2>Datos B&uacute;squedas</h2>
-								 <div id="error" class="error negita"> </div>	
+				
+				<div data-role="collapsible" data-mini="true" data-iconpos="right" id="coordenadas">
+							     <h2>Ir a coordenadas</h2>
+								 
 								 <div class="ui-field-contain">
-									    							
-										<label for="Matricula" class="negrita">Coto:</label>
-										<input type="search"  name = "matricula" title = "matricula" id="matricula" size='6' maxlength='6' label="matricula" data-mini="true">              
-										<label for="Fecha" class="negrita">Fecha:</label>
-										<input type="date" name="fecha" title="Fecha Accidente" label="fecha" id="fecha" size = '12' maxlength='12' data-mini="true" >
-										
-
-									    <input type="button" value="Buscar" id="verinfo" data-icon="search" data-mini="true" data-inline="true" >
-									    
+									    *Longitud/Latitud decimal							
+										<label for="longitud" class="negrita">Long:</label>
+										<input type="search"  name = "longitud" title = "longitud" id="longitud" size='20' maxlength='20' label="longitud" data-mini="true">              
+										<label for="latitud" class="negrita">Lat:</label>
+										<input type="search" name="latitud" title="latitud" label="latitud" id="latitud" size = '20' maxlength='20' data-mini="true" >
+										<input type="button" value="Tranformar" id="idtxy" data-icon="gear" data-mini="true" data-iconpos="right" data-inline="true">
+									  
 							     </div>
+								 <hr>
+								   <div class="ui-field-contain">
+										*ETRS/89 ZONA 30N
+                                        <label for="cx"class="negrita">X:</label>
+										<input type="search"  name = "CX" title = "COORDENADA X" id="CX" size='20' maxlength='20' label="cx" data-mini="true">              
+										<label for="cx" class="negrita">Y:</label>
+										<input type="search" name="CY" title="coordenada Y" label="CY" id="CY" size = '20' maxlength='20' data-mini="true" >
+										<input type="button" value="Tranformar" id="idtgeo" data-icon="gear" data-mini="true" data-iconpos="right" data-inline="true">
+										
+									 
+										
+										<input type="button" value="Ir a" id="ircoordendas" data-icon="search" data-mini="true" data-iconpos="right" data-inline="true">
+									</div>    
+				</div>
 								 
-							</div>	 
-								 
+			
+				   
+				<div data-role="collapsible" data-mini="true" data-iconpos="right" id="resultados">
+					 <h2>B&uacute;squeda Cotos</h2>
+					 <div id="error" class="error negita"> </div>	
+					 <div class="ui-field-contain">
+														
+							<label for="Matricula" class="negrita">Coto:</label>
+							<input type="search"  name = "matricula" title = "matricula" id="matricula" size='6' maxlength='6' label="matricula" data-mini="true">              
+							<label for="Fecha" class="negrita">Fecha:</label>
+							<input type="date" name="fecha" title="Fecha Accidente" label="fecha" id="fecha" size = '12' maxlength='12' data-mini="true" >
+							
+
+							<input type="button" value="Buscar" id="verinfo" data-icon="search" data-mini="true" data-inline="true" >
+							
+					 </div>
+					 
+				</div>	 
+							
+														
 								 
 			</div>	
-        </div>							  
-	<!-- </fieldset>    -->
-   
-	<!-- <form class="ui-filterable">
-     <input id="myFilter" data-type="search">
-    </form>
-
-	<ul data-role="listview" data-filter="true" data-input="#myFilter">
-	  <li><a href="#">Adele</a></li>
-	  <li><a href="#">Billy</a></li>
-	  <li><a href="#">Calvin</a></li>
-	</ul>
-  </div> -->
-
-  
-  
-<
+    </div>							  
+</div>
 </div>
  <script> 
         $(function(){  
