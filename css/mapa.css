@@ -10,7 +10,10 @@
    TODO customize this sample style
    Syntax recommendation http://www.w3.org/TR/REC-CSS2/
 */
- 
+ .ui-icon-road:after{
+background-image: url("../img/road.png");
+background-size: 16px 16px;
+}
 
 .ui-icon-fullextent {
 background-image: url("../img/fullExtent.png");
@@ -60,7 +63,13 @@ background-image: url("../img/ico_localizacion.png");
   opacity:0.9;
  
  }
-  
+
+ #myMapa {
+ width:20em;
+  background-color: #e6f2ff;
+  opacity:0.8;
+ 
+ }
 #myPanel {
  width:25em;
   background-color: #e6f2ff;
@@ -93,13 +102,13 @@ background-image: url("../img/ico_localizacion.png");
 #botones {
     float : right;
 }
-#coordenadas {
+/* #coordenadas {
   width:20%;
   margin:1%;
   border:1px solid #013253;
   font-family: verdana,helvetica,arial,sans-serif;
   font-size:90%;
- }
+ } */
 #presentacion {
 background-color:#013253;
 color:white;
