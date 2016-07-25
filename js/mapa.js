@@ -2,6 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+   var popupCatastro;
    jQuery.scrollTo = function (target, offset, speed, container) {
 
     if (isNaN(target)) {
@@ -108,7 +109,13 @@ function parseDate(fecha) {
     var inter = fecha.split("-");
 	return inter[2]+ "/" + inter[1] + "/" + inter[0];
 }
-
+function isNumero(numero) {
+     var esNumero = true;
+     if (!/^([0-9])*$/.test(numero)) {
+	    esNumero = false;
+	 }
+	 return esNumero;
+}
 function validaFecha(fecha){
                   
             var datePat = /^(\d{1,2})(\/|-)(\d{1,2})(\/|-)(\d{4})$/;
@@ -194,7 +201,55 @@ function loadXMLDoc(url) {
 
           xmlhttp.send();	
 
-     }		
+     }
+function tranformaCoordenadas( lat,lng, referencia) {
+			    var arrayXY= [];
+			    var coor_4326 =[];
+				var coor_25830 =[];
+				var EPSG_25830 = "+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs";
+		        var EPSG_4326 = proj4('EPSG:4326');
+			   if (referencia == 'UTM') {
+			       coor_25830=[lng,lat];
+				   coor_4326 =  proj4(EPSG_25830,EPSG_4326,coor_25830);
+				   arrayXY[0] = coor_4326[0];
+				   arrayXY[1] = coor_4326[1];
+			   } else if ( referencia = 'wsg84')  {
+			       coor_4326=[lng,lat];
+				   coor_25830 =  proj4(EPSG_4326,EPSG_25830,coor_4326);
+				   arrayXY[0] = coor_25830[0];
+				   arrayXY[1] = coor_25830[1];
+			   }
+			  return arrayXY;
+}
+function ortoOcaso(e) {
+    
+	var fechaOK=true;    
+	$("#municipios").empty();
+	//$("#cotos").empty();
+	var fechaj =  document.getElementById("fecha").value;
+	fechaj = parseDate(fechaj);
+	fechaOK=validaFecha(fechaj);
+	if(!fechaOK){
+		 $("#error").empty();
+		 $("#error").append("Debe introducir una Fecha de consulta válida.");
+	}
+	
+	if (fechaOK) {
+		  $("#error").empty();
+		  var url_get= "http://servizos.meteogalicia.es/rss/predicion/rssOrto.action?request_locale=es&lat=" + e.lat + "&lon=" + e.lng + "&data=" +fechaj;
+
+		 $('#info').FeedEk({
+			FeedUrl:url_get,
+			ShowDesc: true,
+			ShowPubDate: false,
+			DateFormat: 'LLL',
+			DateFormatLang: 'es'
+		   // DescCharacterLimit: 223
+		});
+	}
+	$( "#myPanel" ).panel( "open"  );
+	$("#panelinfo").collapsible('expand');	 
+}
      function initMap() {
 	        function onEachFeature(feature, layer) {
 				
@@ -220,6 +275,47 @@ function loadXMLDoc(url) {
 								
 			} };
 			
+			
+		function locateCoordenadas( lat,lng) {
+			 var latlng = L.latLng(lat,lng);
+			 var marca = L.marker([latlng.lat, latlng.lng]).toGeoJSON();
+			 var buffer = pointBuffer (marca, 1/200, "kilometers", 72);
+			 var query = L.esri.query({
+							url:'http://idearagon.aragon.es/arcgis/rest/services/INAGA_Cotos_Caza/MapServer/1',
+							useCors:false
+						});
+			 query.intersects(buffer);
+			 query.run(function(error, featureCollection){
+						 
+						 
+						   var Template2 = '<span class="info">{MATRICULA}-{DTIPO}-{DAPROCH}</span><br>';
+						   if (myLayerQuery) {map.removeLayer(myLayerQuery)};
+						   for (var c=0;c<markCotos.length;c++){
+								map.removeLayer(markCotos[c]);
+							}
+						   myLayerQuery =L.geoJson(false,{
+							                   onEachFeature: onEachFeature
+					                    }).addTo(map); 
+						   
+						   myLayerQuery.setStyle(estiloCotos);
+						   if(error || featureCollection.features.length === 0) {
+						     $("#error").append = "Sin resultados";
+							return false;
+						   }
+							for (var k = 0; k< featureCollection.features.length;k++) {
+							   numFeatures = k;
+							   var resultado = JSON.stringify(featureCollection.features[k].properties,replacer);
+							  
+							   var propiedades2 = JSON.parse(resultado);
+							   featureCollection.features[k].properties.contenido = L.Util.template(Template2,propiedades2);
+							   myLayerQuery.addData(featureCollection.features[k]);
+							  
+							}
+						} );
+			 ortoOcaso(latlng);
+			 map.setView(latlng,10);        
+			
+		}
 	        function municipioIntersect (e) {
 			  var marca = L.marker([e.latlng.lat, e.latlng.lng]).toGeoJSON();
 			  var buffer = pointBuffer (marca, 1/200, "kilometers", 72);
@@ -270,7 +366,7 @@ function loadXMLDoc(url) {
 							                   onEachFeature: onEachFeature
 					                    }).addTo(map); 
 						   
-						   myLayerQuery.setStyle(estiloCotos);
+						   
 						   if(error || featureCollection.features.length === 0) {
 						     $("#error").append = "Sin resultados";
 							return false;
@@ -284,6 +380,7 @@ function loadXMLDoc(url) {
 							   myLayerQuery.addData(featureCollection.features[k]);
 							  
 							}
+							myLayerQuery.setStyle(estiloCotos);
 						} );
 					}	 
 						                                         
@@ -347,12 +444,14 @@ function loadXMLDoc(url) {
 					
 				}
 				  if  (featureCollection.features.length == 1)  {
-						var coordenadas = markCotos[0].getLatLng();
-						map.setView( coordenadas,12);
+						  var coordenadas = markCotos[0].getLatLng();
+						  ortoOcaso(coordenadas);
+						  map.setView( coordenadas,10);
 				   }
 				    setTimeout(function(){ $.mobile.loading( 'hide'); }, 1000);
 				  });   
               // query de cotos
+			
 	         }
 	        function onLocationFound(e) {
 			      $("#error").empty();
@@ -427,7 +526,8 @@ function loadXMLDoc(url) {
 			   map.setZoom(zoomactual);
                map.panTo(center);
              });
-             $("#verinfo").click(function() { 
+             $("#verinfo").click(function(e) { 
+			          L.DomEvent.stopPropagation(e);
 					  matricula=document.getElementById("matricula").value;
 					  matricula = matricula.toUpperCase();
 					  whereClause = "LABELS LIKE " + "'%" + matricula + "%'";
@@ -445,7 +545,64 @@ function loadXMLDoc(url) {
 					    if ($('#panelinfo').is (':visible')) {
        						$('#panelinfo').hide();
 						} else { $('#panelinfo').show() } } ); */
-						
+			$('#idtxy').click(function(e) {
+			    var lat =$('#latitud').val();
+			    var lng=$('#longitud').val();
+				var coor_4326 =[];
+				var coor_25830 =[];
+				coor_4326=[lng,lat];
+				var EPSG_25830 = "+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs";
+				var EPSG_4326 = proj4('EPSG:4326');
+				coor_25830 =  proj4(EPSG_4326,EPSG_25830,coor_4326);
+                $("#CX").val(coor_25830[0]);
+				$("#CY").val(coor_25830[1]);
+			});
+			
+			$('#idtgeo').click(function(e) {
+			    var arrayXY= [];
+			    var lat =$('#CY').val();
+			    var lng=$('#CX').val();
+				var coor_4326 =[];
+				var coor_25830 =[];
+				coor_25830=[lng,lat];
+				var EPSG_25830 = "+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs";
+				var EPSG_4326 = proj4('EPSG:4326');
+				coor_4326 =  proj4(EPSG_25830,EPSG_4326,coor_25830);
+               	$("#longitud").val(coor_4326[0]);
+				$("#latitud").val(coor_4326[1]);
+			});	
+			
+			$('#ircoordendas').click(function(e) {
+			      var arrayXY= [];
+			      var lat =$('#latitud').val();
+			      var lng=$('#longitud').val();
+				  var x=$("#CX").val();
+				  var y= $("#CY").val(); 
+				  
+				  if ( (!lat  || !lng )&& (!y || !x) ) {
+				         
+				         return false;
+				   
+				  } else if ( !lat || !lng )  {
+				      if ( !isNumero(lat) || !isNumero(lng) ) {
+					      return false;
+					  }
+				      arrayXY = tranformaCoordenadas( y,x,'UTM');
+					  alert(arrayXY[0]+","+arrayXY[1]);
+					  $("#longitud").val(arrayXY[0]);
+				      $("#latitud").val(arrayXY[1]);
+				  } else if ( !y || !x) {
+				       if ( !isNumero(x) || !isNumero(y) ) {
+					      return false;
+					  }
+				      arrayXY = tranformaCoordenadas( lat,lng,'wsg84');
+				      $("#CX").val(arrayXY[0]);
+				      $("#CY").val(arrayXY[1]);
+				  }
+				  lat =$('#latitud').val();
+			      lng=$('#longitud').val();
+			      locateCoordenadas(lat,lng);
+		    });
 						
 			 map.on('locationfound', onLocationFound);
              map.on('locationerror', onLocationError);
@@ -477,30 +634,272 @@ function loadXMLDoc(url) {
            
             var layerGroup = L.layerGroup().addTo(map);  
 		    var results = L.featureGroup();
+			
+			
+			
+var Spain_PNOA_Ortoimagen = L.tileLayer.wms('http://www.ign.es/wms-inspire/pnoa-ma', {
+	layers: 'OI.OrthoimageCoverage',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+var Spain_PNOA_Mosaico = L.tileLayer.wms('http://www.ign.es/wms-inspire/pnoa-ma', {
+	layers: 'OI.MosaicElement',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+
+// Ortofotos históricas del PNOA
+// Capabilities: http://www.ign.es/wms/pnoa-historico?request=GetCapabilities&service=WMS
+
+var Spain_PNOA_2004 = L.tileLayer.wms('http://www.ign.es/wms/pnoa-historico', {
+	layers: 'PNOA2004',			format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+var Spain_PNOA_2005 = L.tileLayer.wms('http://www.ign.es/wms/pnoa-historico', {
+	layers: 'PNOA2005',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+var Spain_PNOA_2006 = L.tileLayer.wms('http://www.ign.es/wms/pnoa-historico', {
+	layers: 'PNOA2006',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+var Spain_PNOA_2007 = L.tileLayer.wms('http://www.ign.es/wms/pnoa-historico', {
+	layers: 'PNOA2007',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+var Spain_PNOA_2008 = L.tileLayer.wms('http://www.ign.es/wms/pnoa-historico', {
+	layers: 'PNOA2008',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+var Spain_PNOA_2009 = L.tileLayer.wms('http://www.ign.es/wms/pnoa-historico', {
+	layers: 'PNOA2009',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+var Spain_PNOA_2010 = L.tileLayer.wms('http://www.ign.es/wms/pnoa-historico', {
+	layers: 'PNOA2010',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+
+// Unidades administrativas
+// Capabilities:http://www.ign.es/wms-inspire/unidades-administrativas?request=GetCapabilities&service=WMS
+// Unidades administrativas tres niveles de administración (comunidad autónoma, provincia y municipio).
+
+var Spain_UnidadAdministrativa = L.tileLayer.wms('http://www.ign.es/wms-inspire/unidades-administrativas', {
+	layers: 'AU.AdministrativeUnit',
+	format: 'image/png',
+	transparent: true,
+	continuousWorld : true,
+	attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+
+});
+
+// Cartografía raster IGN.
+// Capabilities: http://www.ign.es/wms-inspire/mapa-raster?request=GetCapabilities&service=WMS
+// Cartografía raster del Instituto Geográfico Nacional.
+// Mapa de España a escala 1:2 000 000 hasta una resolución de 420 m/pixel. 
+// Mapa de España a escala 1:1 250 000 hasta una resolución de 104.44 m/pixel. 
+// Mapa de España a escala 1:500 000 hasta una resolución de 40.04 m/pixel. 
+// Mapa Provincial a escala 1:200 000 hasta una resolución de 20.16 m/pixel. 
+// Mapa Topográfico Nacional a escala 1:50 000 hasta una resolución de 5.04 m/pixel
+// Mapa Topográfico Nacional a escala 1:25 000 a partir de una resolución de 5.04 m/pixel. 
+
+var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-raster', {
+	layers: 'mtn_rasterizado',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+
+// Mapa base de España del Instituto Geográfico Nacional
+// Capabilities: http://www.ign.es/wms-inspire/ign-base?request=GetCapabilities&service=WMS
+// Cartografía procedente de diversas bases de datos geográficas del IGN. 
+// Para escalas menores se usa la Base Cartográfica Nacional escala 1:500.000 (BCN500) y 
+// Base Topográfica Nacional escala 1:100.000 (BTN100) 
+// y para escalas mayores se usa la Base Topográfica Nacional 1:25.000 (BTN25) junto con la Base Cartográfica Numérica 1:25.000 (BCN25).
+// También se visualiza información procedente de NGBE (Nomenclátor Geográfico Básico de España), 
+// SIGLIM (Sistema Geográfico de Líneas Límite) y Cartociudad.
+var Spain_IGNBase = L.tileLayer.wms('http://www.ign.es/wms-inspire/ign-base', {
+	layers: 'IGNBaseTodo',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+
+// Modelos Digitales del Terreno de España
+// http://www.ign.es/wms-inspire/mdt?request=GetCapabilities&service=WMS
+// Modelos Digitales del Terreno de España en diversos sistemas de referencia: 
+// Modelo Digital de Elevaciones, Modelo Digital de Pendientes y Modelo Digital de Orientaciones.
+
+var Spain_MDT_Elevaciones = L.tileLayer.wms('http://www.ign.es/wms-inspire/mdt?', {
+	layers: 'EL.GridCoverage',
+	format: 'image/png',
+	transparent: true,
+	continuousWorld : true,
+	attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+
+var Spain_MDT_Orientaciones = L.tileLayer.wms('http://www.ign.es/wms-inspire/mdt?', {
+	layers: 'Orientaciones',
+	format: 'image/png',
+	transparent: true,
+	continuousWorld : true,
+	attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+
+var Spain_MDT_Pendientes = L.tileLayer.wms('http://www.ign.es/wms-inspire/mdt?', {
+	layers: 'Pendientes',
+	format: 'image/png',
+	transparent: true,
+	continuousWorld : true,
+	attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+
+// Cartografía Catastral
+// Capabilities: http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?request=GetCapabilities&service=WMS
+// Cartografía Catastral de la Dirección General del Catastro.
+
+var Spain_Catastro = L.tileLayer.wms('http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx', {
+	layers: 'Catastro',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: ' <a href="http://www.catastro.meh.es/" target="_blank">Dirección General del Catastro</a>'
+});
+
+// ANDALUCIA
+
+// Callejero Digital de Andalucía Unificado
+// Capabilities: http://www.callejerodeandalucia.es/servicios/cdau/wms?request=GetCapabilities&service=WMS
+// Ejes de vía y los portales del Callejero Digital de Andalucía Unificado. 
+
+var Andalucia_CDAUVialyPortal = L.tileLayer.wms('http://www.callejerodeandalucia.es/servicios/cdau/wms?', {
+	layers: 'CDAU_wms',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+attribution: '<a href="http://www.callejerodeandalucia.es/portal/web/cdau/" target="_blank">Fuente: CDAU (Entidades Locales-Junta de Andalucía- IGN).</a>'
+});
+
+// CDAU Base Cartográfica
+// Capabilities: http://www.callejerodeandalucia.es/servicios/base/wms?request=GetCapabilities&service=WMS
+// Base cartográfica del Callejero Digital de Andalucía Unificado
+
+
+var Andalucia_CDAUBase = L.tileLayer.wms('http://www.callejerodeandalucia.es/servicios/base/wms?', {
+	layers: 'CDAU_base',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: '<a href="http://www.callejerodeandalucia.es/portal/web/cdau/" target="_blank">Fuente: CDAU (Entidades Locales-Junta de Andalucía- IGN).</a>'
+});
+
+// Mapa Toporaster10
+// Capabilities: http://www.ideandalucia.es/services/toporaster10/wms?request=GetCapabilities&service=WMS
+
+var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/services/toporaster10/wms?', {
+	layers: 'toporaster10',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: '<a href="http://www.juntadeandalucia.es/institutodeestadisticaycartografia" target="_blank">Instituto de Estadística y Cartografía de Andalucía</a>'
+
+});
+
+			
+			
+			
+			/* var catastroBase = L.tileLayer.wms('https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx', {
+				layers: 'Catastro',
+				format: 'image/png',
+				transparent: true,
+				continuousWorld : true,
+				
+				crs:L.CRS.EPSG4326,
+				
+				attribution: '<a href="https://www.sedecatastro.gob.es/"" target="_blank">Dirección General de Catastro</a>'
+				
+			}); */
+			
+			
+			
+
+
+              var ignraster = L.tileLayer.wms("http://www.ign.es/wms-inspire/mapa-raster", {
+                layers: "mtn_rasterizado",//layer name (see get capabilities)
+                format: 'image/png',
+                opacity: 0.8,
+                transparent: true,
+                version: '1.3.0',//wms version (see get capabilities)
+                attribution: "Fondo Cedido por © Instituto Geográfico Nacional de España"
+            }).addTo(layerGroup);
             
             var pnoa = L.tileLayer.wms("http://www.ign.es/wms-inspire/pnoa-ma", {
                 layers: "OI.OrthoimageCoverage",//layer name (see get capabilities)
                 format: 'image/png',
                 transparent: true,
-                version: '1.3.0',//wms version (see get capabilities)
+				opacity:0.7,
+				version: '1.3.0',//wms version (see get capabilities)
                 attribution: "PNOA WMS. Cedido por © Instituto Geográfico Nacional de España"
-            }).addTo(layerGroup);
-                             
+            });
+			
+			/* var catastroBase = L.tileLayer.betterWms ('http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx', {
+				layers: 'Catastro',
+				format: 'image/png',
+				transparent: true,
+				continuousWorld : false,
+				bounds : L.latLngBounds(L.latLng(43.19316, -3.24646), L.latLng(39.54218, 2.21924)),
+				crs:L.CRS.EPSG4326,
+				attribution: '<a href="https://www.sedecatastro.gob.es/"" target="_blank">Dirección General de Catastro</a>',
+				maxZoom: 25
+			}).addTo(layerGroup); */
+			
+			    var options = {'transparent': true,
+								format: 'image/png',
+								transparent: true,
+								continuousWorld : false,
+								bounds : L.latLngBounds(L.latLng(43.19316, -3.24646), L.latLng(39.54218, 2.21924)),
+								crs:L.CRS.EPSG4326,
+								dataType: "jsonp",
+								attribution: '<a href="https://www.sedecatastro.gob.es/"" target="_blank">Dirección General de Catastro</a>',
+								maxZoom: 25};
+				var source = L.WMS.source("https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx", options);
+				var catastroBase = source.getLayer('Catastro');
+				
+					
+												 
             var openmap= L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                 transparent: true,	
                 opacity: 0.7,
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             });
             
-             var ignraster = L.tileLayer.wms("http://www.ign.es/wms-inspire/mapa-raster", {
-                layers: "mtn_rasterizado",//layer name (see get capabilities)
-                format: 'image/png',
-                opacity: 0.6,
-                transparent: true,
-                version: '1.3.0',//wms version (see get capabilities)
-                attribution: "Fondo Cedido por © Instituto Geográfico Nacional de España"
-            }).addTo(layerGroup);
-            
+           
            
 
                         
@@ -522,11 +921,50 @@ function loadXMLDoc(url) {
                 attribution: "Fondo Cedido por © Instituto Geográfico Nacional de España"
             });
           
-            var grupo_BASE = {'Raster IGN':ignraster };
-            var overlay = { 'Ortofoto PNOA':pnoa,'IGNBASE':igntodo,  'Limites Adm.':administrativo,'Openmap':openmap};
+            var grupo_BASE = {'Raster IGN':ignraster,'Catastro':catastroBase,'Ortofoto PNOA':pnoa,'MDT elevaciones':Spain_MDT_Elevaciones};
+            var overlay = { 'IGNBASE':igntodo,  'Limites Adm.':administrativo,'Openmap':openmap};
            
             map.addControl(new L.Control.Layers( overlay,grupo_BASE, {position:'topleft'}));
             L.control.scale({imperial:false}).addTo(map);
+			var optionsM= { position: 'topright' , captureZIndex: 10000 ,
+			                localization: 'es',
+							 primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers',
+							 primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares',
+							 activeColor: '#b820e3',
+							 completedColor: '#b820e3',
+							 measure: 'Medicioacute;n',
+                             measureDistancesAndAreas: 'Medir distancias y acute;reas',
+							  createNewMeasurement: 'Crear nueva medicioacute;n',
+							  startCreating: 'añada puntos al mapa',
+							  finishMeasurement: 'Terminar medicioacure;n',
+							  lastPoint: 'uacute;ltimo punto',
+							  area: 'Aacute;rea',
+							  perimete: 'Periacute;metro',
+							  pointLocation: 'Localizacioacute;n del punto',
+							  areaMeasurement: 'Medición de aacute;rea',
+							  linearMeasurement: 'Medicioacute;n lineal',
+							  pathDistance: 'Distancia de ruta',
+							  centerOnArea: 'Centrar en este Area',
+							  centerOnLine: 'Centrar en esta línea',
+							  centerOnLocation: 'Centrar en esta localizacioacute;n',
+							  cancel: 'Cancelar',
+							  delete: 'Eliminar',
+							  acres: 'Acres',
+							  feet: 'Pies',
+							  kilometers: 'Km.',
+							  hectares: 'Has.',
+							  meters: 'Metros',
+							  miles: 'Millas',
+							  sqfeet: 'Pies cuadrados',
+							  sqmeters: 'Metros cuadrados',
+							  sqmiles: 'Millas cuadradas',
+							  decPoint: ',',
+							  thousandsSep: '.'};
+			                 
+	
+
+			var measureControl = L.control.measure(optionsM);
+			measureControl.addTo(map);
 			
 			    
           var capaConsulta=L.esri.dynamicMapLayer(
@@ -584,7 +1022,7 @@ function loadXMLDoc(url) {
 				 
 				  });  
 			      if (numResultados == 1 ) {
-                      map.setView(markposition.getLatLng(),15);
+                      map.setView(markposition.getLatLng(),10);
                   }					  
 			   
             });
@@ -600,12 +1038,9 @@ function loadXMLDoc(url) {
 					center = map.getCenter();
 				});
       
-          /*  map.on('mousemove', function(e) {
-                document.getElementById("y").value = e.latlng.lat;
-                document.getElementById("x").value = e.latlng.lng
-            }); */
           
             map.on('dblclick', function (e) {
+			    L.DomEvent.stopPropagation(e);
 			    var sumaTemplateMun='';
 			    var sumaTemplate='';
 				$("#cotos").empty();
@@ -634,40 +1069,11 @@ function loadXMLDoc(url) {
                     fillColor: '#f03',
                     fillOpacity: 0.4
                 }).addTo(map);
-                
-                            // ----
-            
-
-                
-                //---
-                
-                var x,y,z;
-                x=  e.latlng.lat;
-                y= e.latlng.lng;
-                
-                var fechaOK=true;    
-                
-                var fechaj =  document.getElementById("fecha").value;
-				fechaj = parseDate(fechaj);
-				fechaOK=validaFecha(fechaj);
-                if(!fechaOK){
-                     $("#error").empty();
-                     $("#error").append("Debe introducir una Fecha de consulta válida.");
-                }
-                if (fechaOK) {
-                      $("#error").empty();
-                      var url_get= "http://servizos.meteogalicia.es/rss/predicion/rssOrto.action?request_locale=es&lat=" + e.latlng.lat + "&lon=" + e.latlng.lng + "&data=" +fechaj;
-
-                     $('#info').FeedEk({
-                        FeedUrl:url_get,
-                        ShowDesc: true,
-                        ShowPubDate: false,
-                        DateFormat: 'LLL',
-                        DateFormatLang: 'es'
-                       // DescCharacterLimit: 223
-                    });
-                }
-               
+                var x,y
+				x= e.latlng.lat;
+				y= e.latlng.lng;
+                ortoOcaso(e.latlng);
+                               
 //.................           
                // circle.bindPopup("coordenadas del centro: "+e.latlng.lat + ", " + e.latlng.lng  );
                 marker.setLatLng(e.latlng);
@@ -819,30 +1225,69 @@ function loadXMLDoc(url) {
 				//setTimeout(function(){ $.mobile.loading( 'hide'); }, 3000);
             });
    // click        
-		    
-             var texto;
-                         
-              var popupTemplate = '<h3>COTO:{MATRICULA}-{DTIPO}</h3><br>Aprovechamiento: {DAPROCH}<br>NOMBRE:{NOMBRE}<br>Titular:{TITULAR}<br>SUPERFICIE:{HSUPERF} has.</h3>';
-              capaConsulta.bindPopup(function (error, featureCollection) {
+		
+		map.on('click', function (e) { 
+		      L.DomEvent.stopPropagation(e);
+              document.getElementById("latitud").value = e.latlng.lat;
+              document.getElementById("longitud").value = e.latlng.lng;
+              var texto;
+              var templateCoto =  '<h2>COTO:{MATRICULA}-{DTIPO}</h2><h2>Aprovechamiento: {DAPROCH}<br>NOMBRE:{NOMBRE}<h2>';      
+              var popupTemplate = '<h2>COTO:{MATRICULA}-{DTIPO}</h2><h2>Aprovechamiento: {DAPROCH}<br>NOMBRE:{NOMBRE}<br>Titular:{TITULAR}<br>SUPERFICIE:{HSUPERF} has.</h2><h2>';
+              var coto;
+			  var propiedades;
+			  var contenido='';
+			capaConsulta.bindPopup(function (error, featureCollection) {
            
                 texto='';
 				$("#error").empty();
                 if(error || featureCollection.features.length === 0) {
+				    $("#error").error;
+					 if ( !(popupCatastro===undefined)) {
+					   popupCatastro.openOn(map);
+					 }
                     return false;
                 }
-                for (var j = 0; j<= featureCollection.features.length;j++) {
-                    
-                   texto += JSON.stringify(featureCollection.features[j].properties,replacer);
-                   var propiedades = JSON.parse(texto);
-                   return L.Util.template(popupTemplate,propiedades);
+				
+				$("#cotos").empty();
+				if (myLayerCotos) { map.removeLayer(myLayerCotos);}
+				myLayerCotos = L.geoJson(false,{
+							onEachFeature: onEachFeature
+					}).addTo(map); 
+				   
+                for (var j = 0; j < featureCollection.features.length;j++) {
+                   numFeatures = j;
+				   texto = JSON.stringify(featureCollection.features[j].properties,replacer);
+                   propiedades = JSON.parse(texto);
+				   coto = L.Util.template(templateCoto,propiedades);
+				   featureCollection.features[j].properties.contenido = coto;
+				   myLayerCotos.addData(featureCollection.features[j]);
+				   contenido += L.Util.template(popupTemplate,propiedades);
+				   $("#cotos").append(coto);
+				   
+				  
+				}
+				  myLayerCotos.setStyle(estiloCotos);
+				
+				
+               // if  (featureCollection.features.length == 1)  {
+						  var coordenadas = markCotos[0].getLatLng();
+						  
+						  ortoOcaso(coordenadas);
+						   map.setView(markCotos[0].getLatLng(),10);
+			    //}
+              
+               // return texto;
+               $( "#myPanel" ).panel( "open"  );
+			   $("#panelinfo").collapsible('expand');
+			   if ( popupCatastro===undefined) {
+                      return contenido;
+			   } else {
+				   return contenido + popupCatastro.getContent();
                  //  return L.Util.template(popupTemplate, featureCollection.features[j].properties);
                 }
-               
-                return texto;
-
            
-          } );
-		    
+			} );
+        });
 		 
      }	 
 		    
