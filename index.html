@@ -4,8 +4,8 @@
 
 <!-- Include meta tag to ensure proper rendering and touch zooming -->
 <meta charset="ISO-8859-1">
-<meta name="viewport" content="width=device-width, initial-scale=1">
- <meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"">
+<meta name="apple-mobile-web-app-capable" content="yes" />
    
 
 <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -54,11 +54,13 @@
 
 <body>
 
-<div data-role="page" id="index" class="ui-responsive-panel">
+<!-- <div data-role="page" id="index" class="ui-responsive-panel"> -->
 
   <div  id="header" data-role="header" data-position="fixed" >
-              <h1>INAGA</h1>
-			  <h1>Terrenos Cineg&eacute;ticos</h1>
+                  <h1>Instituto Aragon&eacute;s de Gesti&oacute;n Ambiental</h1>
+             	  <h1>Terrenos Cineg&eacute;ticos de Arag&oacute;n</h1>
+			      
+			  
 		     <a href="#myMapa" class="ui-btn ui-btn-inline ui-corner-all ui-shadow   ui-icon-road ui-btn-icon-left" data-mini="true">Mapa</a>	
 			 <a href="#myPanel" class="ui-btn ui-btn-inline ui-corner-all ui-shadow  ui-icon-power ui-btn-icon-left" data-mini="true">Herramientas</a>	
 			
@@ -67,32 +69,47 @@
 
   <!-- <div data-role="content"> -->
 <div id="main" data-role="main" class="ui-content">
-    
+
+    <div id="map">
+	                <div  id="controlCoor" class="ui-field-contain leaflet-control">
+                        <div data-role="controlgroup" data-mini="true" data-type="horizontal">
+		 		 		
+							<label for="x">Y:</label>
+							 <input type="text"   title = "y" id="y"  readonly="true" size='20' data-mini="true">
+						  	 <label for="Y">x:</label>
+							<input type="text"  title = "x"  id='x' size='20' readonly="true" data-mini="true">  
+					    </div>
+                    </div>
+	</div>    
     
     <!--  <fieldset class="mapa">		
 		<legend class="legend">Mapa</legend> -->
-				
-		<div id="map">
-		    <!--  <a href="#myPanel" class="ui-btn ui-btn-inline ui-corner-all ui-shadow leaflet-control ajuste" data-mini="true">Utilidades</a> -->	
-		   
-			        
-		<!-- -- fin de map	 -->			 
-		</div>     
+		
 	<div data-role="panel" id="myMapa" data-display="overlay" data-position="left" > 
 	    <div  data-role="collapsible" data-mini="true" data-iconpos="right" >
 				
 				        
-				        <h2>Herramientas Mapa<h2>
+				        <h2>Herramientas Mapa</h2>
 						<div data-role="controlgroup" data-type="vertical" data-mini="true">
 						  
 						
 						  <input type="button" value="Inicial"  id="zoonini" data-icon="home"  title="Zoom Inicial" alt="zoom inicial"/>
 						  <input type="button" value="zoom Anterior" id="zoonant" data-icon="arrow-l"  title="Zoom Anterior"alt="zoom anterior"/>
 						  <input type="button" value="Localizaci&oacute;n"  id="locate" data-icon="location" title="localizacion"alt="Mi posicion"/>  
-                          <input type="button" value="Borrar"  id="clear" data-icon="delete"  title="Limpiar mapa"/>						  
+                          <input type="button" value="Borrar"  id="clear" data-icon="delete"  title="Limpiar mapa"/>	
+						  
+						 </div>
+						 <hr>
+						   <div class="ui-field-contain">
+							 <div>
+							   <label for="slidercotos">Transparencia</label>
+							 </div>
+							<div data-role="rangeslider" data-highlight="true"  data-mini="true">
+							  <input type="range" name="slidercotos1" id="slidercotos1" value="1" min="0" max="1" step="0.1"/>						  
+							  <input type="range" name="slidercotos2" id="slidercotos2" value="1" min="0" max="1" step="0.1"/>		
+							</div>
+						  </div>				 
 						
-											 
-						</div>
 	    </div>
 		
 	</div>
@@ -166,18 +183,30 @@
 														
 								 
 			</div>	
-    </div>							  
+					
+		
+    </div>	
+     	
 </div>
-</div>
+        <div id="footer" data-role="footer" class="ui-bar" data-position="fixed" >
+		          <!--  class = 'ui-widget ui-widget-content ui-corner-all ui-button' -->
+				  <h1>&copy;Instituto Aragon&eacute;s de Gesti&oacute;n Ambiental</h1>
+				   
+		</div>
  <script> 
         $(function(){  
 		    $.mobile.loading( 'show', { theme: "a", text: "Cargando...", textonly: false,textVisible:true });
-			
-		      var element = $('#header');
-
+			 var ventana_alto = $(window).height();
+		     var element = $('#header');
              var altura = element.height();
+			 var alturaFoot;
 			 element = $('#main');
-			 element.css("top", altura + 1);
+			 element.css("top", altura + 2); 
+			 
+			  element = $('#footer');
+			  alturaFoot = element.height();
+			  element =$('#map');
+			 element.css("height", ventana_alto - ( altura) - alturaFoot); 
 			 $fecha=$('#fecha');
 			 if ($fecha[0].type!="date"){
 			       $.datepicker.regional['es'] = {
@@ -203,7 +232,7 @@
 			 }
 		     document.getElementById("fecha").value = hoy();
 			 touchScroll('panel');
-			 logos();
+			//logos();
 			 initMap(); 
 			 setTimeout(function(){ $.mobile.loading( 'hide'); }, 2000);
 	 	});  	 
