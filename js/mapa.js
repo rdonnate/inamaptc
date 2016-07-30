@@ -492,11 +492,15 @@ function ortoOcaso(e) {
 			var matricula;
 			var whereClause;
 		    var markCotos=[];
+			var centerIni = L.latLng(41.635973   ,  -0.889893);
 			var map = L.map("map",{doubleClickZoom:false,minZoom:7,
-			maxZoom: 40,
-			bounceAtZoomLimits:true,
-			maxBounds: L.latLngBounds(L.latLng(43.19316, -3.24646), L.latLng(39.54218, 2.21924))});
-			
+						center:centerIni,
+						maxZoom: 40,
+						trackResize:true,
+						bounceAtZoomLimits:false,
+						maxBounds: L.latLngBounds(L.latLng(43.19316, -3.24646), L.latLng(39.54218, 2.21924))
+						});
+			//maxBounds: L.latLngBounds(L.latLng(43.587354 , -3.24646), L.latLng(42.212245  , 3.317871))
 			
 			//var marcas =  new L.FeatureGroup();
 		    
@@ -571,7 +575,12 @@ function ortoOcaso(e) {
                	$("#longitud").val(coor_4326[0]);
 				$("#latitud").val(coor_4326[1]);
 			});	
-			
+			$('#slidercotos1').change(function (e) {
+                capaConsulta.setOpacity($('#slidercotos1').val());			
+			});
+			$('#slidercotos2').change(function (e) {
+                capaConsulta.setOpacity($('#slidercotos2').val());			
+			});
 			$('#ircoordendas').click(function(e) {
 			      var arrayXY= [];
 			      var lat =$('#latitud').val();
@@ -603,7 +612,11 @@ function ortoOcaso(e) {
 			      lng=$('#longitud').val();
 			      locateCoordenadas(lat,lng);
 		    });
-						
+			 map.on('mousemove', function(e) { 
+			    document.getElementById("y").value = e.latlng.lat;
+                document.getElementById("x").value = e.latlng.lng;
+			})
+			 
 			 map.on('locationfound', onLocationFound);
              map.on('locationerror', onLocationError);
 			 $("#locate").click(function(e) {
@@ -760,7 +773,7 @@ var Spain_MDT_Elevaciones = L.tileLayer.wms('http://www.ign.es/wms-inspire/mdt?'
 	layers: 'EL.GridCoverage',
 	format: 'image/png',
 	transparent: true,
-	continuousWorld : true,
+	continuousWorld : false,
 	attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
 });
 
@@ -788,7 +801,7 @@ var Spain_Catastro = L.tileLayer.wms('http://ovc.catastro.meh.es/Cartografia/WMS
 	layers: 'Catastro',
 	format: 'image/png',
 	transparent: false,
-	continuousWorld : true,
+	continuousWorld : false,
 	attribution: ' <a href="http://www.catastro.meh.es/" target="_blank">Dirección General del Catastro</a>'
 });
 
@@ -971,6 +984,7 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
          {
           url:'http://idearagon.aragon.es/arcgis/rest/services/INAGA_Cotos_Caza/MapServer',
           opacity: 0.5,
+		  format:'png',
           useCors: false });
           capaConsulta.addTo(map);
           
