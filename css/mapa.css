@@ -33,10 +33,11 @@ background-image: url("../img/ico_localizacion.png");
 
 .ui-content {
     position: absolute;
-    top: 43px;
+    top: 40px;
     right: 0;
-    bottom: 0px;
+    bottom: 0;
     left: 0;
+	/* height: 90%; */
     padding: 0 !important;
 	
 }  
@@ -65,7 +66,7 @@ background-image: url("../img/ico_localizacion.png");
  }
 
  #myMapa {
- width:20em;
+ width:22em;
   background-color: #e6f2ff;
   opacity:0.8;
  
@@ -117,14 +118,30 @@ clear:both;
 text-align:center;
 padding:1px; 
 }	
-#footer {
+#footer1 {
 background-color:#013253;
 color:white;
-font-weight: bold;
+font-weight: bold !important;
 clear:both;
 text-align:center;
 padding:1px; 
 }	
+#header1 {
+background-color:#013253;
+color:white;
+font-weight: bold !important;
+clear:both;
+text-align:center;
+padding:1px; 
+}	
+#controlCoor {
+   display: inline-block;
+   width:40%;
+   float:right;
+   background-color: #e6f2ff;
+   opacity:0.8;
+}
+
  #logodga{
 width: 20%;
 
@@ -137,8 +154,7 @@ width: 15%;
 width: 20%;
 
 }
-
-#map { height:  97%; }
+#map { min-height:300px; height: 100%} 
 #pnlInstructions { background-color: #fff; padding: 10px; opacity:0.7 }
 #pnlInstructions h2 { margin: 0; font-weight: bold;}
 
