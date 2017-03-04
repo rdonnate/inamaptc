@@ -10,6 +10,20 @@
    TODO customize this sample style
    Syntax recommendation http://www.w3.org/TR/REC-CSS2/
 */
+
+.ui-controlgroup-controls>label {
+    position: fixed!important;
+	font-size:small;
+	font-weight: bold;
+    height: auto;
+    width: auto;
+    overflow: auto;
+	clip:auto;
+}
+.ui-controlgroup-horizontal .ui-controlgroup-controls {
+    display: block;
+    vertical-align: middle;
+}
  .ui-icon-road:after{
 background-image: url("../img/road.png");
 background-size: 16px 16px;
@@ -77,6 +91,10 @@ background-image: url("../img/ico_localizacion.png");
   opacity:0.8;
  
  }
+ .ui-mini {
+    margin: 1.2em;
+}
+
   
 .mapa {
   width:100%;
@@ -135,11 +153,17 @@ text-align:center;
 padding:1px; 
 }	
 #controlCoor {
-   display: inline-block;
-   width:40%;
+   display: block;
+   font-weight: bold;
+   margin-right: 6px;
    float:right;
+   padding:6px 0px 4px 6px;
+   border-radius:6px;
+   width:15em;
+   font-family: verdana,helvetica,arial,sans-serif;
+   font-size:1em;
    background-color: #e6f2ff;
-   opacity:0.8;
+   opacity:0.7;
 }
 
  #logodga{
@@ -157,4 +181,8 @@ width: 20%;
 #map { min-height:300px; height: 100%} 
 #pnlInstructions { background-color: #fff; padding: 10px; opacity:0.7 }
 #pnlInstructions h2 { margin: 0; font-weight: bold;}
+
+.leaflet-control-mouseCoordinate{width:250px;min-height:30px;text-align:left;font-weight: bold;border-radius:5px;box-shadow:0 1px 5px rgba(0,0,0,.4);background:#e6f2ff;color:#333;padding:6px 10px 6px 6px; opacity:0.7}
+.leaflet-control-mouseCoordinate table{width:100%}.coords{width:90px}}
+
 

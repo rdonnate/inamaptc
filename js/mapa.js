@@ -236,7 +236,8 @@ function ortoOcaso(e) {
 	
 	if (fechaOK) {
 		  $("#error").empty();
-		  var url_get= "http://servizos.meteogalicia.es/rss/predicion/rssOrto.action?request_locale=es&lat=" + e.lat + "&lon=" + e.lng + "&data=" +fechaj;
+		   parseFloat(e.lat.toFixed(3))
+		  var url_get= "http://servizos.meteogalicia.es/rss/predicion/rssOrto.action?request_locale=es" + "&lat=" + parseFloat(e.lat.toFixed(3)) + "&lon=" +  parseFloat(e.lng.toFixed(3))+"&data=" +fechaj;
 
 		 $('#info').FeedEk({
 			FeedUrl:url_get,
@@ -500,6 +501,24 @@ function ortoOcaso(e) {
 						bounceAtZoomLimits:false,
 						maxBounds: L.latLngBounds(L.latLng(43.19316, -3.24646), L.latLng(39.54218, 2.21924))
 						});
+						
+				map.setView([41, -0.09], 7);		
+			   var openmap2= L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                transparent: true,	
+                opacity: 0.7,
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            });		
+            
+var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-raster', {
+	layers: 'mtn_rasterizado',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+});
+			 var rect1 = {color: "#ff1100", weight: 3};
+		     var rect2 = {color: "#0000AA", weight: 1, opacity:0, fillOpacity:0};
+			 var miniMap = new L.Control.MiniMap(Spain_MapasrasterIGN, { toggleDisplay: true,aimingRectOptions : rect1, shadowRectOptions: rect2 }).addTo(map);
 			//maxBounds: L.latLngBounds(L.latLng(43.587354 , -3.24646), L.latLng(42.212245  , 3.317871))
 			
 			//var marcas =  new L.FeatureGroup();
@@ -740,14 +759,6 @@ var Spain_UnidadAdministrativa = L.tileLayer.wms('http://www.ign.es/wms-inspire/
 // Mapa Topográfico Nacional a escala 1:50 000 hasta una resolución de 5.04 m/pixel
 // Mapa Topográfico Nacional a escala 1:25 000 a partir de una resolución de 5.04 m/pixel. 
 
-var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-raster', {
-	layers: 'mtn_rasterizado',
-	format: 'image/png',
-	transparent: false,
-	continuousWorld : true,
-	attribution: '© <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
-});
-
 // Mapa base de España del Instituto Geográfico Nacional
 // Capabilities: http://www.ign.es/wms-inspire/ign-base?request=GetCapabilities&service=WMS
 // Cartografía procedente de diversas bases de datos geográficas del IGN. 
@@ -911,10 +922,7 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
                 opacity: 0.7,
                 attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             });
-            
-           
-           
-
+   
                         
             var igntodo = L.tileLayer.wms("http://www.ign.es/wms-inspire/ign-base", {
                 layers: "IGNBaseTodo",//layer name (see get capabilities)
@@ -978,6 +986,9 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
 
 			var measureControl = L.control.measure(optionsM);
 			measureControl.addTo(map);
+			L.control.mouseCoordinate({gpsLong: false, utm:true,utmref:false}).addTo(map);
+			
+			
 			
 			    
           var capaConsulta=L.esri.dynamicMapLayer(
@@ -985,7 +996,8 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
           url:'http://idearagon.aragon.es/arcgis/rest/services/INAGA_Cotos_Caza/MapServer',
           opacity: 0.5,
 		  format:'png',
-          useCors: false });
+          useCors: false,
+		  attribution: 'Cotos Aragon.- INAGA'});
           capaConsulta.addTo(map);
           
 		  
@@ -1242,6 +1254,8 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
 		
 		map.on('click', function (e) { 
 		      L.DomEvent.stopPropagation(e);
+			  popupCatastro= undefined;
+			  
               document.getElementById("latitud").value = e.latlng.lat;
               document.getElementById("longitud").value = e.latlng.lng;
               var texto;
@@ -1287,7 +1301,8 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
 						  var coordenadas = markCotos[0].getLatLng();
 						  
 						  ortoOcaso(coordenadas);
-						   map.setView(markCotos[0].getLatLng(),10);
+						//  map.setView(markCotos[0].getLatLng(),map.getZoom());
+						map.setView( [ e.latlng.lat, e.latlng.lng],map.getZoom());
 			    //}
               
                // return texto;

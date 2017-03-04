@@ -35,19 +35,24 @@
    <script src="http://cdn.jsdelivr.net/leaflet.esri.geocoder/2.0.2/esri-leaflet-geocoder.js"></script>
    
    
-    <link rel="stylesheet" href="http://leaflet.github.io/Leaflet.draw/leaflet.draw.css"/>
-    <script src="http://leaflet.github.io/Leaflet.draw/leaflet.draw.js"></script>
+    <!-- <link rel="stylesheet" href="http://leaflet.github.io/Leaflet.draw/leaflet.draw.css"/> -->
+    <!-- <script src="http://leaflet.github.io/Leaflet.draw/leaflet.draw.js"></script> -->
+	<script src="https://static.sekandocdn.net/static/feednami/feednami-client-v1.1.js"></script>
      <link href='http://fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
      <link rel="stylesheet" media="screen" href="css/styles.css" type="text/css" />
     <link rel="stylesheet" media="screen" href="css/dga.css" type="text/css"  />
     <link rel="stylesheet" href="css/mapa.css" type="text/css" />
-	 <link rel="stylesheet" href="css/FeedEk.css" type="text/css" />
+	<link rel="stylesheet" href="css/FeedEk.css" type="text/css" />
+	<link rel="stylesheet" href="css/Control.MiniMap.min.css" type="text/css" />
     <script type="text/javascript" src="js/FeedEk.js"></script>
 	<script type="text/javascript" src="js/wms.js"></script>   
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.14/proj4.js"></script>
 	<script src="js/leaflet-measure.min.js"></script>
-    <script type="text/javascript" src="js/mapa.js"></script>   
+	<script src="js/coordinate.js"></script>
+	<script src="js/minimap.js"></script>
+	<script type="text/javascript" src="js/mapa.js"></script>   
+	
 	<!-- <script src="cordova.js"></script>    --> 
 
 </head>
@@ -74,10 +79,11 @@
 	                <div  id="controlCoor" class="ui-field-contain leaflet-control">
                         <div data-role="controlgroup" data-mini="true" data-type="horizontal">
 		 		 		
-							<label for="x">Y:</label>
-							 <input type="text"   title = "y" id="y"  readonly="true" size='20' data-mini="true">
-						  	 <label for="Y">x:</label>
-							<input type="text"  title = "x"  id='x' size='20' readonly="true" data-mini="true">  
+						     <label for="Y" class="negrita">X:</label>
+							 <input type="text" name="Y" title = "y" id="y"  readonly="true"  label="y" data-mini="true">
+						  	
+							 <label for="X" class="negrita">Y:</label>
+							 <input type="text" name="X" title = "x" id='x'  readonly="true" label="x" data-mini="true">  
 					    </div>
                     </div>
 	</div>    
@@ -114,7 +120,7 @@
 		
 	</div>
 	 
-	<div data-role="panel" id="myPanel" data-display="overlay" data-display="overlay" data-position="right" > 
+	<div data-role="panel" id="myPanel" data-display="overlay"  data-position="right" > 
    
             
 			<div  data-role="collapsibleset" class="ajuste leaflet-control" > 
@@ -206,7 +212,7 @@
 			  element = $('#footer');
 			  alturaFoot = element.height();
 			  element =$('#map');
-			 element.css("height", ventana_alto - ( altura) - alturaFoot); 
+			 element.css("height", ventana_alto - ( altura) - alturaFoot-10); 
 			 $fecha=$('#fecha');
 			 if ($fecha[0].type!="date"){
 			       $.datepicker.regional['es'] = {

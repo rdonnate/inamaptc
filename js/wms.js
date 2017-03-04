@@ -173,11 +173,15 @@ wms.Source = L.Layer.extend({
 
     'parseFeatureInfo': function(result, url) {
         // Hook to handle parsing AJAX response
+	   
         if (result == "error") {
             // AJAX failed, possibly due to CORS issues.
             // Try loading content in <iframe>.
-            result = "<iframe src='" + url + "' style='border:none' height='250' width='300'>>";
-        }
+            result = "<a href="+url+" target='_blank'>Ver Parcela en OVC</a>"+"<hr>"+"<iframe src='" + url + "' style='border:none' height='250' width='250'>";
+        } else {
+			 result = "<a href="+url+" target='_blank'>Ver Parcela en OVC</a>"+"<hr>";
+		}
+		
         return result;
     },
 
@@ -187,7 +191,8 @@ wms.Source = L.Layer.extend({
             return;
         }
 		//var popwms= this._map.openPopup(info, latlng);
-		 popupCatastro = L.popup({maxWidth:325,maxHeight:400})
+		
+		 popupCatastro = L.popup({maxWidth:300,maxHeight:300})
 			.setLatLng(latlng)
 			.setContent(info)
 			;
