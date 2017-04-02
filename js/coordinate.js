@@ -110,7 +110,7 @@ L.Control.mouseCoordinate  = L.Control.extend({
 L.control.mouseCoordinate = function (options) {
     return new L.Control.mouseCoordinate(options);
 };
-;/**
+/**
  * Created by Johannes Rudolph <johannes.rudolph@gmx.com> on 01.09.2016.
  */
 
@@ -185,7 +185,8 @@ var NAC = {
         else return 0;
     }
 
-};;/**
+};
+/**
  * Created by Johannes Rudolph <johannes.rudolph@gmx.com> on 01.09.2016.
  */
 
@@ -259,7 +260,8 @@ var QTH = {
         return yqth;
     }
 
-};;/**
+};
+/**
  * Created by Johannes Rudolph <johannes.rudolph@gmx.com> on 01.09.2016.
  */
 
@@ -516,7 +518,7 @@ var UTM = {
         return {lat: bw, lng: lw};
     }
 };
-;/**
+/**
  * Created by Johannes Rudolph <johannes.rudolph@gmx.com> on 01.09.2016.
  */
 

@@ -4,7 +4,7 @@
 
 <!-- Include meta tag to ensure proper rendering and touch zooming -->
 <meta charset="ISO-8859-1">
-<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes" />
    
 
@@ -38,7 +38,7 @@
     <!-- <link rel="stylesheet" href="http://leaflet.github.io/Leaflet.draw/leaflet.draw.css"/> -->
     <!-- <script src="http://leaflet.github.io/Leaflet.draw/leaflet.draw.js"></script> -->
 	<script src="https://static.sekandocdn.net/static/feednami/feednami-client-v1.1.js"></script>
-     <link href='http://fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+     <link href="http://fonts.googleapis.com/css?family=Lato:900,300" rel="stylesheet" type="text/css">
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
      <link rel="stylesheet" media="screen" href="css/styles.css" type="text/css" />
     <link rel="stylesheet" media="screen" href="css/dga.css" type="text/css"  />
@@ -49,8 +49,9 @@
 	<script type="text/javascript" src="js/wms.js"></script>   
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.14/proj4.js"></script>
 	<script src="js/leaflet-measure.min.js"></script>
-	<script src="js/coordinate.js"></script>
 	<script src="js/minimap.js"></script>
+    <script src="js/exif.js"></script>
+	<script src="cordova.js"></script>
 	<script type="text/javascript" src="js/mapa.js"></script>   
 	
 	<!-- <script src="cordova.js"></script>    --> 
@@ -83,7 +84,7 @@
 							 <input type="text" name="Y" title = "y" id="y"  readonly="true"  label="y" data-mini="true">
 						  	
 							 <label for="X" class="negrita">Y:</label>
-							 <input type="text" name="X" title = "x" id='x'  readonly="true" label="x" data-mini="true">  
+							 <input type="text" name="X" title = "x" id="x"  readonly="true" label="x" data-mini="true">  
 					    </div>
                     </div>
 	</div>    
@@ -100,8 +101,8 @@
 						  
 						
 						  <input type="button" value="Inicial"  id="zoonini" data-icon="home"  title="Zoom Inicial" alt="zoom inicial"/>
-						  <input type="button" value="zoom Anterior" id="zoonant" data-icon="arrow-l"  title="Zoom Anterior"alt="zoom anterior"/>
-						  <input type="button" value="Localizaci&oacute;n"  id="locate" data-icon="location" title="localizacion"alt="Mi posicion"/>  
+						  <input type="button" value="zoom Anterior" id="zoonant" data-icon="arrow-l"  title="Zoom Anterior" alt="zoom anterior"/>
+						  <input type="button" value="Localizaci&oacute;n"  id="locate" data-icon="location" title="localizacion" alt="Mi posicion"/>  
                           <input type="button" value="Borrar"  id="clear" data-icon="delete"  title="Limpiar mapa"/>	
 						  
 						 </div>
@@ -146,19 +147,19 @@
 								 <div class="ui-field-contain">
 									    *Longitud/Latitud decimal							
 										<label for="longitud" class="negrita">Long:</label>
-										<input type="search"  name = "longitud" title = "longitud" id="longitud" size='20' maxlength='20' label="longitud" data-mini="true">              
+										<input type="search"  name = "longitud" title = "longitud" id="longitud" size="20" maxlength="20" label="longitud" data-mini="true">              
 										<label for="latitud" class="negrita">Lat:</label>
-										<input type="search" name="latitud" title="latitud" label="latitud" id="latitud" size = '20' maxlength='20' data-mini="true" >
+										<input type="search" name="latitud" title="latitud" label="latitud" id="latitud" size = "20" maxlength="20" data-mini="true" >
 										<input type="button" value="Tranformar" id="idtxy" data-icon="gear" data-mini="true" data-iconpos="right" data-inline="true">
 									  
 							     </div>
 								 <hr>
 								   <div class="ui-field-contain">
 										*ETRS/89 ZONA 30N
-                                        <label for="cx"class="negrita">X:</label>
-										<input type="search"  name = "CX" title = "COORDENADA X" id="CX" size='20' maxlength='20' label="cx" data-mini="true">              
+                                        <label for="cx" class="negrita">X:</label>
+										<input type="search"  name = "CX" title = "COORDENADA X" id="CX" size="20" maxlength="20" label="cx" data-mini="true">              
 										<label for="cx" class="negrita">Y:</label>
-										<input type="search" name="CY" title="coordenada Y" label="CY" id="CY" size = '20' maxlength='20' data-mini="true" >
+										<input type="search" name="CY" title="coordenada Y" label="CY" id="CY" size = "20" maxlength="20" data-mini="true" >
 										<input type="button" value="Tranformar" id="idtgeo" data-icon="gear" data-mini="true" data-iconpos="right" data-inline="true">
 										
 									 
@@ -175,13 +176,22 @@
 					 <div class="ui-field-contain">
 														
 							<label for="Matricula" class="negrita">Coto:</label>
-							<input type="search"  name = "matricula" title = "matricula" id="matricula" size='6' maxlength='6' label="matricula" data-mini="true">              
+							<input type="search"  name = "matricula" title = "matricula" id="matricula" size="6" maxlength="6" label="matricula" data-mini="true">              
 							<label for="Fecha" class="negrita">Fecha:</label>
-							<input type="date" name="fecha" title="Fecha Accidente" label="fecha" id="fecha" size = '12' maxlength='12' data-mini="true" >
+							<input type="date" name="fecha" title="Fecha Accidente" label="fecha" id="fecha" size = "12" maxlength="12" data-mini="true" >
 							
-
+                            
 							<input type="button" value="Buscar" id="verinfo" data-icon="search" data-mini="true" data-inline="true" >
-							
+						    <input type="button" value="Descargar Geo."  id="download" data-icon="download"  data-mini="true"  data-inline="true" title="Descargar Geometr&iacutea" alt="Descargar Geometr&iacutea"/>  
+                            <hr>
+                            <input type="button" value="Tomar foto."  id="foto" data-icon="camera"  data-mini="true"  data-inline="true" title="Tomar una foto" alt="Tomar una foto"/>  
+                            <img src=""  id="imagen" alt="foto" style="width:48px;height:48px;">
+                           <hr>
+							 <div id="metadata"n class="ui-field-contain">
+                                
+                             </div>
+
+                         
 					 </div>
 					 
 				</div>	 
@@ -217,15 +227,15 @@
 			 if ($fecha[0].type!="date"){
 			       $.datepicker.regional['es'] = {
 						closeText: 'Cerrar',
-						<!-- prevText: ' nextText: 'Sig>', -->
+						//prevText: ' nextText: 'Sig>',
 						currentText: 'Hoy',
 						monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
 						'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
 						monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
 						'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-						dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-						dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié;', 'Juv', 'Vie', 'Sáb'],
-						dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'],
+						dayNames: ['Domingo', 'Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado'],
+						dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mier;', 'Juv', 'Vie', 'Sab'],
+						dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
 						weekHeader: 'Sm',
 						dateFormat: 'dd/mm/yy',
 						firstDay: 1,
