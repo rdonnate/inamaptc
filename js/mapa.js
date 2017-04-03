@@ -395,7 +395,9 @@ function ortoOcaso(e) {
           // Take picture using device camera and retrieve image as base64-encoded string
             // pictureSource=navigator.Camera.PictureSourceType;
             // destinationType=navigator.Camera.DestinationType;
-             navigator.camera.getPicture(onSuccess, onFail, { quality: 50, destinationType: Camera.DestinationType.DATA_URL });
+             navigator.camera.getPicture(onSuccess, onFail, { quality: 50,  sourceType:Camera.PictureSourceType.PHOTOLIBRARY ,destinationType:Camera.DestinationType.DATA_URL });
+           
+     
         }
          
        function onSuccess(imageData) {
@@ -1135,9 +1137,9 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
 								bounds : L.latLngBounds(L.latLng(43.19316, -3.24646), L.latLng(39.54218, 2.21924)),
 								crs:L.CRS.EPSG4326,
 								dataType: "jsonp",
-								attribution: '<a href="https://www.sedecatastro.gob.es/"" target="_blank">Direcci&oacute;n General de Catastro</a>',
+								attribution: '<a href="http://www.sedecatastro.gob.es/"" target="_blank">Direcci&oacute;n General de Catastro</a>',
 								maxZoom: 30};
-				var source = L.WMS.source("https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx", options);
+				var source = L.WMS.source("http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx", options);
 				var catastroBase = source.getLayer('Catastro');
 				
 					
