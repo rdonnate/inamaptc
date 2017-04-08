@@ -395,32 +395,45 @@ function ortoOcaso(e) {
           // Take picture using device camera and retrieve image as base64-encoded string
             // pictureSource=navigator.Camera.PictureSourceType;
             // destinationType=navigator.Camera.DestinationType;
-             navigator.camera.getPicture(onSuccess, onFail, { quality: 50,  sourceType:Camera.PictureSourceType.PHOTOLIBRARY ,destinationType:Camera.DestinationType.DATA_URL });
-           
+             navigator.camera.getPicture(onSuccess, onFail, { quality: 50,  sourceType:Camera.PictureSourceType.PHOTOLIBRARY ,destinationType:Camera.DestinationType.FILE_URI });
+                      
      
         }
          
        function onSuccess(imageData) {
      
+          var smallImage = document.getElementById('imagen');
 
-         var smallImage = document.getElementById('imagen');
-
-        
           smallImage.style.display = 'block';
 
-          smallImage.src = "data:image/jpeg;base64," + imageData;
+        //  smallImage.src = "data:image/jpeg;base64," + imageData;
            
-          //smallImage.src =imageData;
-          var allMetaDataSpan = document.getElementById("metadata");
-           allMetaDataSpan.innerHTML=allMetaDataSpan;
+         smallImage.src =imageData;
            
-        EXIF.getData(smallImage, function() {
+        var $img = $('#imagen');
+
+        if ($img.length > 0 && !$img.get(0).complete) {
+           $img.on('load', triggerExif);
+        }
+
+                 
+        
+        }
+        
+         function triggerExif () {
+           EXIF.getData(this, function () {
+                  
             var allMetaData = EXIF.getAllTags(this);
+            $("#metadata").empty();
+            if (allMetaData===undefined || allMetaData ===null ) return;
             var allMetaDataSpan = document.getElementById("metadata");
             var latitude = EXIF.getTag(this,"GPSLatitude");
+            if (latitude===undefined || latitude ===null ) return;
             var longitude =  EXIF.getTag(this,"GPSLongitude");
             var reflong = EXIF.getTag(this,"GPSLongitudeRef");
             var reflat = EXIF.getTag(this,"GPSLatitudeRef");
+           
+           
             allMetaDataSpan.innerHTML = JSON.stringify(allMetaData, null, "\t");
             console.log(latitude +"/"+ longitude);
             console.log(latitude[0] );
@@ -436,28 +449,19 @@ function ortoOcaso(e) {
                 lat = lat * (-1);
             }
             console.log (lat+"/"+lng);
-           
-            //
-                var coor_4326 =[];
-				var coor_25830 =[];
-				coor_4326=[lng,lat];
-				var EPSG_25830 = "+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs";
-				var EPSG_4326 = proj4('EPSG:4326');
-				coor_25830 =  proj4(EPSG_4326,EPSG_25830,coor_4326);
+              
+            var coor_4326 =[];
+			coor_4326=[lng,lat];
           
-            
-            //
-           // arrayXY = tranformaCoordenadas(lat,lng,'wsg84');
-            console.log ( coor_25830[0]+"/"+coor_25830[1]);
             var b = L.latLng(coor_4326[1],coor_4326[0]).toBounds(12);
             var pt = L.latLng(coor_4326[1],coor_4326[0]);
             console.log(b);
             console.log(pt);
           
-                var imageUrl = smallImage.src;
-                    imageBounds = b;
+            var imageUrl = this.src;
+                          imageBounds = b;
              // console.log(imageUrl);
-           var texto =  "<b>Esta foto esta en este punto <br> Latitud: "+pt.lat+"<br>"+ " Longitud: "+ pt.lng +"<hr>"+  "<img src=" +smallImage.src+  " id='imagen1' "  +                   " alt='foto1' style='width:75px;height:75px;'>";
+           var texto =  "<b>Esta foto esta en este punto <br> Latitud: "+pt.lat+"<br>"+ " Longitud: "+ pt.lng +"<hr>"+  "<img src=" +this.src+  " id='imagen1' "  +                   " alt='foto1' style='width:75px;height:75px;'>";
            
            var  marcaFoto = L.marker(pt).addTo(map).bindPopup(texto).openPopup();
            var photomap = L.imageOverlay(imageUrl, imageBounds).addTo(map);
@@ -465,11 +469,10 @@ function ortoOcaso(e) {
             
             
             
-    });
-        
-        }
+         });
+         }
          
-	        function onEachFeature(feature, layer) {
+	    function onEachFeature(feature, layer) {
 				
 				if (feature.properties) {
 				   try {
@@ -546,7 +549,7 @@ function ortoOcaso(e) {
               $("#error").empty();
 			   if (layerMunicipio) {map.removeLayer(layerMunicipio);}
                var queryMun = L.esri.query({
-                    url:'http://idearagon.aragon.es/arcgis/rest/services/INAGA_Ambitos/MapServer/3',
+                    url:'https://idearagon.aragon.es/servicios/rest/services/INAGA/INAGA_Ambitos/MapServer/3',
                     useCors:false
                 });
                 queryMun.intersects(buffer); 
@@ -718,9 +721,9 @@ function ortoOcaso(e) {
 			var centerIni = L.latLng(41.635973   ,  -0.889893);
 			var map = L.map("map",{doubleClickZoom:false,minZoom:7,
 						center:centerIni,
-						maxZoom: 50,
+						maxZoom: 100,
 						trackResize:true,
-						bounceAtZoomLimits:false,
+						bounceAtZoomLimits:true,
                         condensedAttributionControl: true,
 						maxBounds: L.latLngBounds(L.latLng(43.19316, -3.24646), L.latLng(39.54218, 2.21924))
 						});
@@ -887,14 +890,18 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
             });
           
              $("#foto").click(function(e) {
+                    $.mobile.loading( 'show', { theme: "a", text: "Cargando Foto...", textonly: false,textVisible:true });
 			        L.DomEvent.stopPropagation(e);
                     capturePhoto();
+                    setTimeout(function(){ $.mobile.loading( 'hide'); }, 3000);
                
 
                  
                  
             });
-	
+	  
+        
+
 	        
             var dibujos=[];
             var countdibujos = 0;
@@ -1368,7 +1375,7 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
               // query municipios 
 			  
               var queryMun = L.esri.query({
-                    url:'http://idearagon.aragon.es/arcgis/rest/services/INAGA_Ambitos/MapServer/3',
+                    url:'https://idearagon.aragon.es/servicios/rest/services/INAGA/INAGA_Ambitos/MapServer/3',
                     useCors:false
                 });
                 queryMun.intersects(buffer); 
