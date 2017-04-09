@@ -3,6 +3,7 @@
  * and open the template in the editor.
  */
    var popupCatastro;
+   var foto;
    jQuery.scrollTo = function (target, offset, speed, container) {
 
     if (isNaN(target)) {
@@ -403,33 +404,39 @@ function ortoOcaso(e) {
        function onSuccess(imageData) {
      
           var smallImage = document.getElementById('imagen');
-
+       
+          smallImage.src ='#';
           smallImage.style.display = 'block';
 
         //  smallImage.src = "data:image/jpeg;base64," + imageData;
-           
-         smallImage.src =imageData;
-           
+         $("#metadata").empty(); 
+         smallImage.src=imageData;
+       
         var $img = $('#imagen');
+////
+//        if ($img.length > 0 && !$img.get(0).complete) {
+////           $img.on('load', triggerExif);
+//               $("#imagen").on('click', triggerExif()  );    
+//        }
 
-        if ($img.length > 0 && !$img.get(0).complete) {
-           $img.on('load', triggerExif);
-        }
-
-                 
+       
         
         }
         
-         function triggerExif () {
+          function triggerExif () {
+           console.log("exif");
            EXIF.getData(this, function () {
-                  
+           
             var allMetaData = EXIF.getAllTags(this);
             $("#metadata").empty();
-            if (allMetaData===undefined || allMetaData ===null ) return;
+             console.log(allMetaData);
+            if (allMetaData===undefined || allMetaData===null || allMetaData=={} ) return;
             var allMetaDataSpan = document.getElementById("metadata");
             var latitude = EXIF.getTag(this,"GPSLatitude");
             if (latitude===undefined || latitude ===null ) return;
+               
             var longitude =  EXIF.getTag(this,"GPSLongitude");
+               
             var reflong = EXIF.getTag(this,"GPSLongitudeRef");
             var reflat = EXIF.getTag(this,"GPSLatitudeRef");
            
@@ -900,7 +907,65 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
                  
             });
 	  
-        
+             $("#localizarfoto").click(function(e) {
+                  L.DomEvent.stopPropagation(e);
+                  console.log("exif");
+                  var image = document.getElementById('imagen');
+                  foto = new Image();
+                  foto.src = image.src;
+               EXIF.getData(foto, function () {
+
+                var allMetaData = EXIF.getAllTags(foto);
+                $("#metadata").empty();
+                 console.log(allMetaData);
+                if (allMetaData===undefined || allMetaData===null || allMetaData=={} ) return;
+                var allMetaDataSpan = document.getElementById("metadata");
+                var latitude = EXIF.getTag(foto,"GPSLatitude");
+                if (latitude===undefined || latitude ===null ) return;
+
+                var longitude =  EXIF.getTag(foto,"GPSLongitude");
+
+                var reflong = EXIF.getTag(foto,"GPSLongitudeRef");
+                var reflat = EXIF.getTag(foto,"GPSLatitudeRef");
+
+
+                allMetaDataSpan.innerHTML = JSON.stringify(allMetaData, null, "\t");
+                console.log(latitude +"/"+ longitude);
+                console.log(latitude[0] );
+                var grados = ( latitude [2] / 60 + latitude[1] ) / 60;
+                var lat = grados + latitude[0];
+                grados = ( longitude [2] / 60 + longitude[1] ) / 60;
+                var lng=  grados  + longitude[0];
+
+                if (reflong=="W" ) {
+                    lng = lng * (-1);
+                }
+                if (reflat=="S" ) {   
+                    lat = lat * (-1);
+                }
+                console.log (lat+"/"+lng);
+
+                var coor_4326 =[];
+                coor_4326=[lng,lat];
+
+                var b = L.latLng(coor_4326[1],coor_4326[0]).toBounds(12);
+                var pt = L.latLng(coor_4326[1],coor_4326[0]);
+                console.log(b);
+                console.log(pt);
+
+                var imageUrl = this.src;
+                              imageBounds = b;
+                 // console.log(imageUrl);
+               var texto =  "<b>Esta foto esta en este punto <br> Latitud: "+pt.lat+"<br>"+ " Longitud: "+ pt.lng +"<hr>"+  "<img src=" +this.src+  " id='imagen1' "  +                   " alt='foto1' style='width:75px;height:75px;'>";
+
+               var  marcaFoto = L.marker(pt).addTo(map).bindPopup(texto).openPopup();
+               var  photomap = L.imageOverlay(imageUrl, imageBounds).addTo(map);
+               map.setView(pt,12);
+
+
+
+              });
+             });
 
 	        
             var dibujos=[];
