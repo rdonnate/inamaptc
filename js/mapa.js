@@ -4,6 +4,8 @@
  */
    var popupCatastro;
    var foto;
+   var marcaFoto;
+   var photoMap;
    jQuery.scrollTo = function (target, offset, speed, container) {
 
     if (isNaN(target)) {
@@ -29,13 +31,7 @@
 	
 function onDeviceReady() {
 	    var persistent;
-	    window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
-		if (L.Browser.mobileWebkit || L.Browser.mobileWebkit3D) {
-		//persitent = LocalFileSystem.PERSISTENT; }
-			persistent = LocalFileSystem.PERSISTENT; }
-	     else {
-			      persistent = LocalFileSystem.PERSISTENT;
-		 }
+	   	persistent = LocalFileSystem.PERSISTENT;
 		//window.requestFileSystem(window.TEMPORARY, 5*1024*1024 , getDirectorySuccess, fail);
         window.requestFileSystem(persistent,0, getDirectory, fail);
     }
@@ -46,13 +42,13 @@ function getDirectory(fileSystem) {
     }
 function getDirectorySuccess(parent) {
 	
-    console.log("Creando directorio en: " + parent.fullPath);
+    console.log("Creando directorio en: " + parent.toURL());
 }
 
 
 function writeFile ( filename,data) {
     
-    document.addEventListener("deviceready", onDeviceReady, false);
+    //document.addEventListener("deviceready", onDeviceReady, false);
 	 onDeviceReady();
 	
    // filename= "datosRuta" +"/"+ filename;
@@ -66,13 +62,9 @@ function writeFile ( filename,data) {
 	
 	
 	 var persistent;
-	    window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
-		if (L.Browser.mobileWebkit || L.Browser.mobileWebkit3D) {
-		  //persitent = LocalFileSystem.PERSISTENT; }
-			persistent = LocalFileSystem.PERSISTENT; }	
-	     else {
-			      persistent = LocalFileSystem.PERSISTENT;
-		 }
+	    
+	persistent = LocalFileSystem.PERSISTENT;
+	    
 	
 	//filename += ".txt";
     window.requestFileSystem(persistent, 0, function (fs) {
@@ -197,6 +189,7 @@ function logos() {
                 }
               if (myLayer) { map.removeLayer(myLayer);}
 			  if (results) { map.removeLayer(results);}
+             
              /* for (var c=0;c<=dibujos.length;c++){
                  dibujar.removeLayer(dibujos[c]);
              } */
@@ -423,62 +416,7 @@ function ortoOcaso(e) {
         
         }
         
-          function triggerExif () {
-           console.log("exif");
-           EXIF.getData(this, function () {
-           
-            var allMetaData = EXIF.getAllTags(this);
-            $("#metadata").empty();
-             console.log(allMetaData);
-            if (allMetaData===undefined || allMetaData===null || allMetaData=={} ) return;
-            var allMetaDataSpan = document.getElementById("metadata");
-            var latitude = EXIF.getTag(this,"GPSLatitude");
-            if (latitude===undefined || latitude ===null ) return;
-               
-            var longitude =  EXIF.getTag(this,"GPSLongitude");
-               
-            var reflong = EXIF.getTag(this,"GPSLongitudeRef");
-            var reflat = EXIF.getTag(this,"GPSLatitudeRef");
-           
-           
-            allMetaDataSpan.innerHTML = JSON.stringify(allMetaData, null, "\t");
-            console.log(latitude +"/"+ longitude);
-            console.log(latitude[0] );
-            var grados = ( latitude [2] / 60 + latitude[1] ) / 60;
-            var lat = grados + latitude[0];
-            grados = ( longitude [2] / 60 + longitude[1] ) / 60;
-            var lng=  grados  + longitude[0];
-           
-            if (reflong=="W" ) {
-                lng = lng * (-1);
-            }
-            if (reflat=="S" ) {   
-                lat = lat * (-1);
-            }
-            console.log (lat+"/"+lng);
-              
-            var coor_4326 =[];
-			coor_4326=[lng,lat];
-          
-            var b = L.latLng(coor_4326[1],coor_4326[0]).toBounds(12);
-            var pt = L.latLng(coor_4326[1],coor_4326[0]);
-            console.log(b);
-            console.log(pt);
-          
-            var imageUrl = this.src;
-                          imageBounds = b;
-             // console.log(imageUrl);
-           var texto =  "<b>Esta foto esta en este punto <br> Latitud: "+pt.lat+"<br>"+ " Longitud: "+ pt.lng +"<hr>"+  "<img src=" +this.src+  " id='imagen1' "  +                   " alt='foto1' style='width:75px;height:75px;'>";
-           
-           var  marcaFoto = L.marker(pt).addTo(map).bindPopup(texto).openPopup();
-           var photomap = L.imageOverlay(imageUrl, imageBounds).addTo(map);
-           map.setView(pt,12);
-            
-            
-            
-         });
-         }
-         
+                 
 	    function onEachFeature(feature, layer) {
 				
 				if (feature.properties) {
@@ -766,6 +704,8 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
 			   if (myLayerCotos) { map.removeLayer(myLayerCotos);}
 			   if (myLayerQuery) { map.removeLayer(myLayerQuery);}
 			   if (layerMunicipio) { map.removeLayer(layerMunicipio);}
+               if (marcaFoto) { map.removeLayer(marcaFoto);}
+               if (photoMap)  { map.removeLayer(photoMap);}
 			   for (var c=0;c<markCotos.length;c++){
                          map.removeLayer(markCotos[c]);
 				     }
@@ -775,7 +715,7 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
 			    L.DomEvent.stopPropagation(e);
 				 zoomactual=map.getZoom();
 				 center = map.getCenter(); 
-                zoomIni(map);
+                 zoomIni(map);
              });
             $("#zoonant").click(function(e) {
 			   L.DomEvent.stopPropagation(e);
@@ -909,15 +849,15 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
 	  
              $("#localizarfoto").click(function(e) {
                   L.DomEvent.stopPropagation(e);
-                  console.log("exif");
                   var image = document.getElementById('imagen');
                   foto = new Image();
                   foto.src = image.src;
                EXIF.getData(foto, function () {
 
                 var allMetaData = EXIF.getAllTags(foto);
+                
                 $("#metadata").empty();
-                 console.log(allMetaData);
+                
                 if (allMetaData===undefined || allMetaData===null || allMetaData=={} ) return;
                 var allMetaDataSpan = document.getElementById("metadata");
                 var latitude = EXIF.getTag(foto,"GPSLatitude");
@@ -930,8 +870,8 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
 
 
                 allMetaDataSpan.innerHTML = JSON.stringify(allMetaData, null, "\t");
-                console.log(latitude +"/"+ longitude);
-                console.log(latitude[0] );
+                allMetaDataSpan.innerHTML = latitude +"/"+ longitude;
+               
                 var grados = ( latitude [2] / 60 + latitude[1] ) / 60;
                 var lat = grados + latitude[0];
                 grados = ( longitude [2] / 60 + longitude[1] ) / 60;
@@ -948,19 +888,20 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
                 var coor_4326 =[];
                 coor_4326=[lng,lat];
 
-                var b = L.latLng(coor_4326[1],coor_4326[0]).toBounds(12);
+                var b = L.latLng(coor_4326[1],coor_4326[0]).toBounds(20);
                 var pt = L.latLng(coor_4326[1],coor_4326[0]);
-                console.log(b);
-                console.log(pt);
-
+                
                 var imageUrl = this.src;
                               imageBounds = b;
                  // console.log(imageUrl);
-               var texto =  "<b>Esta foto esta en este punto <br> Latitud: "+pt.lat+"<br>"+ " Longitud: "+ pt.lng +"<hr>"+  "<img src=" +this.src+  " id='imagen1' "  +                   " alt='foto1' style='width:75px;height:75px;'>";
-
-               var  marcaFoto = L.marker(pt).addTo(map).bindPopup(texto).openPopup();
-               var  photomap = L.imageOverlay(imageUrl, imageBounds).addTo(map);
-               map.setView(pt,12);
+                var texto =  "<b>Esta foto esta en este punto <br> Latitud: "+pt.lat+"<br>"+ " Longitud: "+ pt.lng +"<hr>"+  "<img src=" +this.src+  " id='imagen1' "  +                   " alt='foto1' style='width:75px;height:75px;'>";
+                if (marcaFoto)
+                   map.removeLayer(marcaFoto);
+                if (photoMap)
+                  map.removeLayer(photoMap);
+                marcaFoto = L.marker(pt).addTo(map).bindPopup(texto).openPopup();
+                photoMap = L.imageOverlay(imageUrl, imageBounds).addTo(map);
+                map.setView(pt,12);
 
 
 
@@ -977,6 +918,7 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
             var markposition;
             var myLayer;
             var myLayerCotos;
+           
             map.setView([41, -0.09], 7);
 			
 			zoomactual=map.getZoom();
@@ -996,7 +938,7 @@ var Spain_PNOA_Ortoimagen = L.tileLayer.wms('http://www.ign.es/wms-inspire/pnoa-
 	format: 'image/png',
 	transparent:true,
 	continuousWorld : true,
-    opacity:0.7,
+    opacity:0.8,
 	version: '1.3.0',
   	attribution: 'PNOA cedido por &copy; <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geogr&aacute;fico Nacional de Espa&ntilde;a</a>'
 });
@@ -1073,24 +1015,6 @@ var Spain_UnidadAdministrativa = L.tileLayer.wms('http://www.ign.es/wms-inspire/
 
 });
 
-// Cartograf�a raster IGN.
-// Capabilities: http://www.ign.es/wms-inspire/mapa-raster?request=GetCapabilities&service=WMS
-// Cartograf�a raster del Instituto Geogr�fico Nacional.
-// Mapa de Espa�a a escala 1:2 000 000 hasta una resoluci�n de 420 m/pixel. 
-// Mapa de Espa�a a escala 1:1 250 000 hasta una resoluci�n de 104.44 m/pixel. 
-// Mapa de Espa�a a escala 1:500 000 hasta una resoluci�n de 40.04 m/pixel. 
-// Mapa Provincial a escala 1:200 000 hasta una resoluci�n de 20.16 m/pixel. 
-// Mapa Topogr�fico Nacional a escala 1:50 000 hasta una resoluci�n de 5.04 m/pixel
-// Mapa Topogr�fico Nacional a escala 1:25 000 a partir de una resoluci�n de 5.04 m/pixel. 
-
-// Mapa base de Espa�a del Instituto Geogr�fico Nacional
-// Capabilities: http://www.ign.es/wms-inspire/ign-base?request=GetCapabilities&service=WMS
-// Cartograf�a procedente de diversas bases de datos geogr�ficas del IGN. 
-// Para escalas menores se usa la Base Cartogr�fica Nacional escala 1:500.000 (BCN500) y 
-// Base Topogr�fica Nacional escala 1:100.000 (BTN100) 
-// y para escalas mayores se usa la Base Topogr�fica Nacional 1:25.000 (BTN25) junto con la Base Cartogr�fica Num�rica 1:25.000 (BCN25).
-// Tambi�n se visualiza informaci�n procedente de NGBE (Nomencl�tor Geogr�fico B�sico de Espa�a), 
-// SIGLIM (Sistema Geogr�fico de L�neas L�mite) y Cartociudad.
 var Spain_IGNBase = L.tileLayer.wms('http://www.ign.es/wms-inspire/ign-base', {
 	layers: 'IGNBaseTodo',
 	format: 'image/png',
@@ -1099,9 +1023,9 @@ var Spain_IGNBase = L.tileLayer.wms('http://www.ign.es/wms-inspire/ign-base', {
 	attribution: '&copy; <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geogr&aacute;fico Nacional de Espa&ntilde;a</a>'
 });
 
-// Modelos Digitales del Terreno de Espa�a
+// Modelos Digitales del Terreno de España
 // http://www.ign.es/wms-inspire/mdt?request=GetCapabilities&service=WMS
-// Modelos Digitales del Terreno de Espa�a en diversos sistemas de referencia: 
+// Modelos Digitales del Terreno de España en diversos sistemas de referencia: 
 // Modelo Digital de Elevaciones, Modelo Digital de Pendientes y Modelo Digital de Orientaciones.
 
 var Spain_MDT_Elevaciones = L.tileLayer.wms('http://www.ign.es/wms-inspire/mdt?', {
@@ -1128,9 +1052,9 @@ var Spain_MDT_Pendientes = L.tileLayer.wms('http://www.ign.es/wms-inspire/mdt?',
 	attribution: '&copy;<a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geogr&aacute;fico Nacional de Espa&ntilde;a</a>'
 });
 
-// Cartograf�a Catastral
+// Cartografia Catastral
 // Capabilities: http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?request=GetCapabilities&service=WMS
-// Cartograf�a Catastral de la Direcci�n General del Catastro.
+// Cartografia Catastral de la Direccion General del Catastro.
 
 var Spain_Catastro = L.tileLayer.wms('http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx', {
 	layers: 'Catastro',
@@ -1142,9 +1066,9 @@ var Spain_Catastro = L.tileLayer.wms('http://ovc.catastro.meh.es/Cartografia/WMS
 
 // ANDALUCIA
 
-// Callejero Digital de Andaluc�a Unificado
+// Callejero Digital de Andalucia Unificado
 // Capabilities: http://www.callejerodeandalucia.es/servicios/cdau/wms?request=GetCapabilities&service=WMS
-// Ejes de v�a y los portales del Callejero Digital de Andaluc�a Unificado. 
+// Ejes de via y los portales del Callejero Digital de Andalucia Unificado. 
 
 var Andalucia_CDAUVialyPortal = L.tileLayer.wms('http://www.callejerodeandalucia.es/servicios/cdau/wms?', {
 	layers: 'CDAU_wms',
@@ -1154,9 +1078,9 @@ var Andalucia_CDAUVialyPortal = L.tileLayer.wms('http://www.callejerodeandalucia
 attribution: '<a href="http://www.callejerodeandalucia.es/portal/web/cdau/" target="_blank">Fuente: CDAU (Entidades Locales-Junta de Andaluc&iacute;a- IGN).</a>'
 });
 
-// CDAU Base Cartogr�fica
+// CDAU Base Cartografica
 // Capabilities: http://www.callejerodeandalucia.es/servicios/base/wms?request=GetCapabilities&service=WMS
-// Base cartogr�fica del Callejero Digital de Andaluc�a Unificado
+// Base cartografica del Callejero Digital de Andalucia Unificado
 
 
 var Andalucia_CDAUBase = L.tileLayer.wms('http://www.callejerodeandalucia.es/servicios/base/wms?', {
@@ -1179,12 +1103,7 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
 
 });
 
-			
-			
-			
-			
-
-
+	
               var ignraster = L.tileLayer.wms("http://www.ign.es/wms-inspire/mapa-raster", {
                 layers: "mtn_rasterizado",//layer name (see get capabilities)
                 format: 'image/png',

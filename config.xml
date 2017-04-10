@@ -29,6 +29,10 @@
 <preference name="android-signed" value="true"/>
 <preference name="Fullscreen" value="true"/>
 <preference name="AndroidLaunchMode" value="singleTop"/>
+<preference name="AndroidPersistentFileLocation" value="Internal" />
+<preference name="iosPersistentFileLocation" value="Library" />
+<preference name="iosExtraFilesystems" value="library,library-nosync,documents,documents-nosync,cache,bundle,root" />
+<preference name="AndroidExtraFilesystems" value="files,files-external,documents,sdcard,cache,cache-external,root" />
 </platform>
 <config-file platform="android" parent="/manifest/application" mode="merge"> 
     <activity android:launchMode="singleTop" />
