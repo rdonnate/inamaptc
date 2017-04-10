@@ -6,6 +6,7 @@
    var foto;
    var marcaFoto;
    var photoMap;
+   var textoGeo;
    jQuery.scrollTo = function (target, offset, speed, container) {
 
     if (isNaN(target)) {
@@ -46,17 +47,17 @@ function getDirectorySuccess(parent) {
 }
 
 
-function writeFile ( filename,data) {
+function writeFile (filename,data) {
     
     //document.addEventListener("deviceready", onDeviceReady, false);
 	 onDeviceReady();
-	
+	 console.log(data);
    // filename= "datosRuta" +"/"+ filename;
 	var fichero = new Object({});
-	fichero.path = filename + ".txt";
+	fichero.path = "datosrtc"+"/"+filename + ".txt";
 	fichero.existe =false;
 	fichero.directorio = "datosrtc";
-	fichero.filename = filename;
+	fichero.filename = filename+ ".txt";
 	fichero.procesado = 0;
 	var i = 0;
 	
@@ -72,8 +73,8 @@ function writeFile ( filename,data) {
     console.log('file system open: ' + fs.name);
     fs.root.getFile(fichero.path, { create: true, exclusive: false }, function (fileEntry) {
 
-       // console.log("fileEntry is file ?" + fileEntry.fullPath);
-        console.log(data);
+       console.log("fileEntry is file ?" + fileEntry.fullPath);
+      
         // fileEntry.name == 'someFile.txt'
         // fileEntry.fullPath == '/someFile.txt'
         writeTxt(fileEntry, data);
@@ -150,7 +151,7 @@ function readFile ( filename,geodb,callback ) {
 		case 12: msg = "Path existente";break;
         case 18: msg = "Operación denegada";break;
     }	
-	  alert("Error lectura/escritura:"+error.code+ "-"+ msg);
+	  comnsole.log("Error lectura/escritura:"+error.code+ "-"+ msg);
 }
 function logos() {
    var element = $('#header');
@@ -563,8 +564,8 @@ function ortoOcaso(e) {
 	        
 	        function queryCotos(whereClause) {
 			    //QUERY COTOS WHERE 
-				var textoGeo;
-			   zoomIni(map);
+				
+			    zoomIni(map);
 			   
 			   var queryWhere = L.esri.query({
                     url:'https://idearagon.aragon.es/servicios/rest/services/INAGA/INAGA_Cotos_Caza/MapServer/1',
@@ -612,16 +613,18 @@ function ortoOcaso(e) {
 					var split = textoCentroide.split(",");
 					var coordenadas = [ split[1].split("]")[0],split[0].split("[")[1] ] */
 					
-				}
+				  }
+                  console.log(textoGeo);
 				  if  (featureCollection.features.length == 1)  {
 						  var coordenadas = markCotos[0].getLatLng();
 						  ortoOcaso(coordenadas);
 						  map.setView( coordenadas,10);
 				   }
 				    setTimeout(function(){ $.mobile.loading( 'hide'); }, 1000);
-					return textoGeo;
+					
 				  });   
               // query de cotos
+                
 			
 	         }
 	        function onLocationFound(e) {
@@ -724,20 +727,14 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
              });
 			 
 			  $("#download").click(function(e) { 
-			          var textoGeoJson;
-			          L.DomEvent.stopPropagation(e);
-					  matricula=document.getElementById("matricula").value;
+                     L.DomEvent.stopPropagation(e);
+                     $( "#verinfo" ).trigger( "click" );
+                      matricula=document.getElementById("matricula").value;
 					  matricula = matricula.toUpperCase();
-					  whereClause = "LABELS LIKE " + "'%" + matricula + "%'";
-					  if (matricula ===null || document.getElementById("matricula").value.length === 0 ||  /^\s*$/.test(document.getElementById("matricula").value)) {
-					     $("#error").empty();
-                         $("#error").append("Debe introducir valor valido para la consulta.");
-					  } else {
-					     $("#error").empty();
-						 $.mobile.loading( 'show', { theme: "a", text: "procesando...", textonly: false,textVisible:true });
-					     textoGeoJson=queryCotos(whereClause);
-						 writeFile(matricula,textoGeoJson);
-					  }
+                      setTimeout(function() { writeFile(matricula,textoGeo);}, 3000);
+                      console.log(textoGeo);
+			         
+					 
 			  });
 			 
 			 
@@ -840,7 +837,7 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
                     $.mobile.loading( 'show', { theme: "a", text: "Cargando Foto...", textonly: false,textVisible:true });
 			        L.DomEvent.stopPropagation(e);
                     capturePhoto();
-                    setTimeout(function(){ $.mobile.loading( 'hide'); }, 3000);
+                    setTimeout(function() { $.mobile.loading( 'hide'); }, 3000);
                
 
                  
