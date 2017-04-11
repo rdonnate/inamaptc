@@ -52,6 +52,14 @@ function writeFile (filename,data) {
     //document.addEventListener("deviceready", onDeviceReady, false);
 	 onDeviceReady();
 	 console.log(data);
+    
+     var txtData = new Array();
+     txtData.push(data);
+     var buffer = txtData.join();
+     var blob = new Blob([buffer], {
+        "type": "text/plain;charset=utf8;"
+    });
+    
    // filename= "datosRuta" +"/"+ filename;
 	var fichero = new Object({});
 	fichero.path = "datosrtc"+"/"+filename + ".txt";
@@ -77,7 +85,7 @@ function writeFile (filename,data) {
       
         // fileEntry.name == 'someFile.txt'
         // fileEntry.fullPath == '/someFile.txt'
-        writeTxt(fileEntry, data);
+        writeTxt(fileEntry, blob);
        
     }, fail);
 
@@ -88,10 +96,9 @@ function writeFile (filename,data) {
         $("#error").empty();
                       
         fileWriter.onwriteend = function() {
-		     /* $("#upload").focus();
-			 $('select').selectmenu('refresh');	  */
+		    
 			$("#error").append("Descarga correcta");
-           // console.log("escritura correcta..."+ data);
+            console.log("escritura correcta..."+ data);
             //readFile(fileEntry);
         };
 
@@ -732,7 +739,7 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
                       matricula=document.getElementById("matricula").value;
 					  matricula = matricula.toUpperCase();
                       setTimeout(function() { writeFile(matricula,textoGeo);}, 3000);
-                      console.log(textoGeo);
+                     
 			         
 					 
 			  });
