@@ -31,29 +31,28 @@
 
 	
 function onDeviceReady() {
-	    var persistent;
-	   	persistent = LocalFileSystem.PERSISTENT;
-		//window.requestFileSystem(window.TEMPORARY, 5*1024*1024 , getDirectorySuccess, fail);
-        window.requestFileSystem(persistent,0, getDirectory, fail);
+	  	//window.requestFileSystem(window.TEMPORARY, 5*1024*1024 , getDirectorySuccess, fail);
+        window.requestFileSystem( LocalFileSystem.PERSISTENT,0, getDirectory, fail);
     }
 function getDirectory(fileSystem) {
 	   
-         fileSystem.root.getDirectory("datosrtc", {create: true, exclusive: false}, getDirectorySuccess,fail);
+       fileSystem.root.getDirectory("datosrtc", {create: true, exclusive: false}, getDirectorySuccess,fail);
 
     }
 function getDirectorySuccess(parent) {
 	
     console.log("Creando directorio en: " + parent.toURL());
+    alert("Creando directorio en: " + parent.toURL());
 }
 
 
 function writeFile (filename,data) {
     
-    //document.addEventListener("deviceready", onDeviceReady, false);
-	 onDeviceReady();
+   
+	// onDeviceReady();
 	 console.log(data);
     
-     var txtData = new Array();
+     var txtData =[];
      txtData.push(data);
      var buffer = txtData.join();
      var blob = new Blob([buffer], {
@@ -69,19 +68,13 @@ function writeFile (filename,data) {
 	fichero.procesado = 0;
 	var i = 0;
 	
-	
-	 var persistent;
-	    
-	persistent = LocalFileSystem.PERSISTENT;
-	    
-	
 	//filename += ".txt";
-    window.requestFileSystem(persistent, 0, function (fs) {
+    window.requestFileSystem( LocalFileSystem.PERSISTENT, 0, function (fs) {
 
     console.log('file system open: ' + fs.name);
     fs.root.getFile(fichero.path, { create: true, exclusive: false }, function (fileEntry) {
 
-       console.log("fileEntry is file ?" + fileEntry.fullPath);
+       console.log("fileEntry is file ? " + fileEntry.fullPath);
       
         // fileEntry.name == 'someFile.txt'
         // fileEntry.fullPath == '/someFile.txt'
@@ -99,7 +92,7 @@ function writeFile (filename,data) {
 		    
 			$("#error").append("Descarga correcta");
             console.log("escritura correcta..."+ data);
-            //readFile(fileEntry);
+            readFile(fileEntry);
         };
 
         fileWriter.onerror = function (e) {
@@ -117,10 +110,10 @@ function writeFile (filename,data) {
     });
 }
 
-function readFile ( filename,geodb,callback ) {
+function readFile (fileEntry) {
          
-    $.mobile.loading( 'show', { theme: "a", text: "Leyendo fichero...", textonly: false,textVisible:true });
-    filename= "datosrtc" +"/"+ filename;
+  //  $.mobile.loading( 'show', { theme: "a", text: "Leyendo fichero...", textonly: false,textVisible:true });
+    filename= "datosrtc" +"/"+ fileEntry.name;
 
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
 
@@ -131,13 +124,31 @@ function readFile ( filename,geodb,callback ) {
         // fileEntry.name == 'someFile.txt'
         // fileEntry.fullPath == '/someFile.txt'
 		
-         readTxt(fileEntry,geodb,callback);
+         readTxt(fileEntry);
         
 		
     }, fail);
 
 }, fail);
 
+}
+
+function readTxt( fileEntry) {
+    
+     fileEntry.file(function (file) {
+        var reader = new FileReader();
+
+        reader.onloadend = function() {
+		     
+			 $("#metadata").empty();
+			 $("#metadata").append(this.result);
+			
+        };
+
+        reader.readAsText(file);
+
+    }, fail);
+	
 }
 
  function fail(error) {
@@ -158,7 +169,10 @@ function readFile ( filename,geodb,callback ) {
 		case 12: msg = "Path existente";break;
         case 18: msg = "Operación denegada";break;
     }	
-	  comnsole.log("Error lectura/escritura:"+error.code+ "-"+ msg);
+	  console.log("Error lectura/escritura:"+error.code+ "-"+ msg);
+      
+			 $("#metadata").empty();
+			 $("#metadata").append("Error lectura/escritura:"+error.code+ "-"+ msg);
 }
 function logos() {
    var element = $('#header');
@@ -674,6 +688,7 @@ function ortoOcaso(e) {
 			var whereClause;
 		    var markCotos=[];
 			var centerIni = L.latLng(41.635973   ,  -0.889893);
+           document.addEventListener("deviceready", onDeviceReady, false);
 			var map = L.map("map",{doubleClickZoom:false,minZoom:7,
 						center:centerIni,
 						maxZoom: 100,
