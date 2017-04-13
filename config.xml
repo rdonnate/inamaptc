@@ -10,7 +10,7 @@
 <allow-intent href="*"/>
 <allow-navigation href="*"/>
 <access origin="*"/>
-<preference name="phonegap-version" value="cli-6.4.0" />
+<preference name="phonegap-version" value="cli-6.5.0" />
 <preference name="xwalkMultipleApk" value="false" />
 <plugin name="cordova-plugin-file" spec="4.2.0"/>
 <plugin name="cordova-plugin-geolocation" spec="2.2.0"/>
