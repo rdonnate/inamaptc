@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+ <html manifest="cache.manifest">
 <head>
 
 <!-- Include meta tag to ensure proper rendering and touch zooming -->
@@ -51,6 +51,7 @@
 	<script src="js/leaflet-measure.min.js"></script>
 	<script src="js/minimap.js"></script>
     <script src="js/exif.js"></script>
+	<script src="cordova.js"></script>
 	<script type="text/javascript" src="js/mapa.js"></script>   
 	
 	<!-- <script src="cordova.js"></script>    --> 
@@ -184,7 +185,16 @@
 						    <input type="button" value="Descargar Geo."  id="download" data-icon="download"  data-mini="true"  data-inline="true" title="Descargar Geometr&iacutea" alt="Descargar Geometr&iacutea"/>  
                             <hr>
                             <input type="button" value="Tomar foto."  id="foto" data-icon="camera"  data-mini="true"  data-inline="true" title="Tomar una foto" alt="Tomar una foto"/>  
-                            <img src=""  id="imagen" alt="foto" style="width:48px;height:48px;">
+                         
+                         
+                           <input type="button" name="localizatfoto"  id="localizarfoto" title="Localizar una foto" value="localizar"  data-icon="camera" data-mini="true"  data-inline="true" alt="Localizar una foto"/>  
+
+                             <img src="#"  id="imagen" alt="foto" style="width:48px;height:48px;"/>
+                           
+
+                        
+
+                            
                            <hr>
 							 <div id="metadata"n class="ui-field-contain">
                                 
