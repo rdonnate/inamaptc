@@ -42,16 +42,15 @@ function getDirectory(fileSystem) {
 function getDirectorySuccess(parent) {
 	
     console.log("Creando directorio en: " + parent.toURL());
-    alert("Creando directorio en: " + parent.toURL());
+    console.log("Creando directorio en: " + parent.fullPath);
 }
 
 
 function writeFile (filename,data) {
     
    
-	// onDeviceReady();
-	 console.log(data);
-    
+	 onDeviceReady();
+	    
      var txtData =[];
      txtData.push(data);
      var buffer = txtData.join();
@@ -61,7 +60,7 @@ function writeFile (filename,data) {
     
    // filename= "datosRuta" +"/"+ filename;
 	var fichero = new Object({});
-	fichero.path = "datosrtc"+"/"+filename + ".txt";
+	fichero.path ="/datosrtc"+"/"+filename + ".txt";
 	fichero.existe =false;
 	fichero.directorio = "datosrtc";
 	fichero.filename = filename+ ".txt";
@@ -113,16 +112,16 @@ function writeFile (filename,data) {
 function readFile (fileEntry) {
          
   //  $.mobile.loading( 'show', { theme: "a", text: "Leyendo fichero...", textonly: false,textVisible:true });
-    filename= "datosrtc" +"/"+ fileEntry.name;
-
+  //  filename="datosrtc/"+ fileEntry.name;
+    filename=fileEntry.fullPath;
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
 
     console.log('file system open: ' + fs.name);
     fs.root.getFile(filename, { create: false, exclusive: false }, function (fileEntry) {
 
-        //console.log("fileEntry is file?" + fileEntry.isFile.toString());
-        // fileEntry.name == 'someFile.txt'
-        // fileEntry.fullPath == '/someFile.txt'
+        console.log("fileEntry is file?" + fileEntry.isFile.toString());
+        console.log(fileEntry.name ); 
+        console.log(fileEntry.fullPath); 
 		
          readTxt(fileEntry);
         
@@ -688,7 +687,7 @@ function ortoOcaso(e) {
 			var whereClause;
 		    var markCotos=[];
 			var centerIni = L.latLng(41.635973   ,  -0.889893);
-           document.addEventListener("deviceready", onDeviceReady, false);
+            document.addEventListener("deviceready", onDeviceReady, false);
 			var map = L.map("map",{doubleClickZoom:false,minZoom:7,
 						center:centerIni,
 						maxZoom: 100,
