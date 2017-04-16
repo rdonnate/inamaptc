@@ -12,7 +12,11 @@
 <access origin="*"/>
 <preference name="phonegap-version" value="cli-6.5.0" />
 <preference name="xwalkMultipleApk" value="false" />
-<plugin name="cordova-plugin-file" spec="4.2.0"/>
+<plugin name="cordova-plugin-file" spec="4.3.1"/>
+<preference name="AndroidPersistentFileLocation" value="Internal" />
+<preference name="iosPersistentFileLocation" value="Library" />
+<preference name="iosExtraFilesystems" value="library,library-nosync,documents,documents-nosync,cache,bundle,root" />
+<preference name="AndroidExtraFilesystems" value="files,files-external,documents,sdcard,cache,cache-external,root" />
 <plugin name="cordova-plugin-geolocation" spec="2.2.0"/>
 <plugin name="cordova-plugin-network-information" spec="1.2.1"/>
 <plugin name="cordova-plugin-device" spec="1.1.2"/>
@@ -29,10 +33,7 @@
 <preference name="android-signed" value="true"/>
 <preference name="Fullscreen" value="true"/>
 <preference name="AndroidLaunchMode" value="singleTop"/>
-<preference name="AndroidPersistentFileLocation" value="Internal" />
-<preference name="iosPersistentFileLocation" value="Library" />
-<preference name="iosExtraFilesystems" value="library,library-nosync,documents,documents-nosync,cache,bundle,root" />
-<preference name="AndroidExtraFilesystems" value="files,files-external,documents,sdcard,cache,cache-external,root" />
+
 </platform>
 <config-file platform="android" parent="/manifest/application" mode="merge"> 
     <activity android:launchMode="singleTop" />
