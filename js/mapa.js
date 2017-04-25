@@ -7,6 +7,8 @@
    var marcaFoto;
    var photoMap;
    var textoGeo;
+   var carpeta;
+   var fichero = new Object({});
    jQuery.scrollTo = function (target, offset, speed, container) {
 
     if (isNaN(target)) {
@@ -39,19 +41,44 @@ function getDirectory(fileSystem) {
        fileSystem.root.getDirectory("datosrtc", {create: true, exclusive: false}, getDirectorySuccess,fail);
 
     }
-function getDirectorySuccess(parent) {
+function getDirectorySuccess(directory) {
 	
-    console.log("Creando directorio en: " + parent.toURL());
-    console.log("Creando directorio en: " + parent.fullPath);
+    console.log("Creando directorio en: " + directory.toURL());
+    console.log("Creando directorio en: " + directory.fullPath);
+   
+    writeFileTxt(directory,fichero.filename,fichero.data)
 }
 
+function writeFileTxt(directory,filename,data) {
+      directory.getFile( filename+ ".txt", { create: true, exclusive: false }, function (fileEntry) {
 
-function writeFile (filename,data) {
-    
-   
-	 onDeviceReady();
-	    
+       console.log("fileEntry is file ? " + fileEntry.fullPath);
+      
+        // fileEntry.name == 'someFile.txt'
+        // fileEntry.fullPath == '/someFile.txt'
+           
      var txtData =[];
+     txtData.push(data);
+     var buffer = txtData.join();
+     var blob = new Blob([buffer], {
+        "type": "text/plain;charset=utf8;"
+    });
+        writeTxt(fileEntry, blob);
+       
+    }, fail);
+
+}
+   
+function writeFile (filename,data) {
+     var z;
+   
+     fichero.data = data;
+     fichero.filename = filename;
+     document.addEventListener("deviceready", onDeviceReady, false);
+     
+	// writeFileTxt(carpeta,filename,data)
+	    
+    /* var txtData =[];
      txtData.push(data);
      var buffer = txtData.join();
      var blob = new Blob([buffer], {
@@ -81,7 +108,7 @@ function writeFile (filename,data) {
        
     }, fail);
 
-}, fail);
+}, fail);*/
 }
  function writeTxt( fileEntry,data) {
      fileEntry.createWriter(function (fileWriter) {
@@ -687,7 +714,7 @@ function ortoOcaso(e) {
 			var whereClause;
 		    var markCotos=[];
 			var centerIni = L.latLng(41.635973   ,  -0.889893);
-            document.addEventListener("deviceready", onDeviceReady, false);
+            
 			var map = L.map("map",{doubleClickZoom:false,minZoom:7,
 						center:centerIni,
 						maxZoom: 100,
