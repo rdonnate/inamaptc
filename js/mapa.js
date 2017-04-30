@@ -133,6 +133,7 @@ function writeFile (filename,data) {
         }
 
         fileWriter.write(data);
+        
     });
 }
 
@@ -167,8 +168,13 @@ function readTxt( fileEntry) {
         reader.onloadend = function() {
 		     
 			 $("#metadata").empty();
-			 $("#metadata").append(this.result);
-			
+             console.log(JSON.parse(JSON.stringify(this.result)));
+             var Template3 = '<span class="negrita">{MATRICULA}-{DTIPO}-{DAPROCH}--{NOMBRE}</span>';
+             var dataJSON = JSON.parse( this.result);
+             var textoPopup =L.Util.template(Template3,dataJSON[0].properties);
+			 $("#metadata").append(textoPopup);
+             console.log(textoPopup);
+						
         };
 
         reader.readAsText(file);
@@ -642,12 +648,12 @@ function ortoOcaso(e) {
 				   $("#error").empty();
 				   var unResultado = 0;
 				   var Template3 = '<span class="negrita info">{LABELS}-{DTIPO}-{DAPROCH}</span>';
-				 
+				   textoGeo="";
 				   for (var j = 0; j< featureCollection.features.length;j++) {
 				    numFeatures = j;
 					var geometriaCoto =  featureCollection.features[j].geometry;
-					textoGeo +=  JSON.stringify(featureCollection.features[j]);
-					var resultadoCoto= JSON.stringify(featureCollection.features[j].properties);
+					textoGeo +=  JSON.stringify(featureCollection.features);
+                    var resultadoCoto= JSON.stringify(featureCollection.features[j].properties);
 					var propiedadesCoto = JSON.parse(resultadoCoto);
 					var textoPopup =L.Util.template(Template3,propiedadesCoto);
 					featureCollection.features[j].properties.contenido = textoPopup;
@@ -1204,8 +1210,16 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
                 version: '1.3.0',//wms version (see get capabilities)
                 attribution: "Fondo Cedido por &copy; Instituto Geogr&aacute;fico Nacional de Espa&ntilde;a"
             });
+         
+            var hibrido = L.gridLayer.googleMutant({
+               maxZoom: 100,
+               transparent: true,
+			   type:'hybrid'
+              // subdomains:['mt0','mt1','mt2','mt3']
+            })
+
           
-            var grupo_BASE = {'Raster IGN':ignraster,'Catastro':catastroBase,'Ortofoto PNOA':Spain_PNOA_Ortoimagen,'MDT pendientes':Spain_MDT_Pendientes};
+            var grupo_BASE = {'Raster IGN':ignraster,'Catastro':catastroBase,'Ortofoto PNOA':Spain_PNOA_Ortoimagen,'MDT pendientes':Spain_MDT_Pendientes,'Google satelite':hibrido};
             var overlay = { 'IGNBASE':igntodo,  'Limites Adm.':administrativo,'Openmap':openmap};
            
             map.addControl(new L.Control.Layers( overlay,grupo_BASE, {position:'topleft'}));

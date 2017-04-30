@@ -23,10 +23,12 @@
 <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> 
 
 <!-- Load Leaflet from CDN-->
-  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.css" />
+<!--  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.css" />-->
+  <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
   <link rel="stylesheet" media="screen" href="css/leaflet-measure.css" type="text/css"  />
   
-  <script src="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.js"></script>
+<!--  <script src="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.js"></script>-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
 
   <!-- Load Esri Leaflet from CDN -->
    <script src="http://cdn.jsdelivr.net/leaflet.esri/2.0.0-beta.7/esri-leaflet.js"></script>
@@ -48,6 +50,8 @@
     <script type="text/javascript" src="js/FeedEk.js"></script>
 	<script type="text/javascript" src="js/wms.js"></script>   
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.14/proj4.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAtWpdYpb6UWxWYHXC3h11aUvytSvEvP4E"> </script>
+    <script src='https://unpkg.com/leaflet.gridlayer.googlemutant@latest/Leaflet.GoogleMutant.js'></script>
 	<script src="js/leaflet-measure.min.js"></script>
 	<script src="js/minimap.js"></script>
     <script src="js/exif.js"></script>
@@ -189,7 +193,7 @@
                          
                            <input type="button" name="localizatfoto"  id="localizarfoto" title="Localizar una foto" value="localizar"  data-icon="camera" data-mini="true"  data-inline="true" alt="Localizar una foto"/>  
 
-                             <img src="#"  id="imagen" alt="foto" style="width:48px;height:48px;"/>
+                             <img src="img/logoweb_Inaga_2.jpg#"  id="imagen" alt="foto" style="width:48px;height:48px;"/>
                            
 
                         
