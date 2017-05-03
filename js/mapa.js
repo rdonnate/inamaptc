@@ -46,7 +46,7 @@ function getDirectorySuccess(directory) {
     console.log("Creando directorio en: " + directory.toURL());
     console.log("Creando directorio en: " + directory.fullPath);
    
-    writeFileTxt(directory,fichero.filename,fichero.data)
+    writeFileTxt(directory,fichero.filename,fichero.data);
 }
 
 function writeFileTxt(directory,filename,data) {
@@ -723,7 +723,7 @@ function ortoOcaso(e) {
             
 			var map = L.map("map",{doubleClickZoom:false,minZoom:7,
 						center:centerIni,
-						maxZoom: 100,
+						maxZoom: 125,
 						trackResize:true,
 						bounceAtZoomLimits:true,
                         condensedAttributionControl: true,
@@ -1211,16 +1211,28 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
                 attribution: "Fondo Cedido por &copy; Instituto Geogr&aacute;fico Nacional de Espa&ntilde;a"
             });
          
-            var hibrido = L.gridLayer.googleMutant({
-               maxZoom: 100,
+            var satelite = L.gridLayer.googleMutant({
+               maxZoom: 125,
                transparent: true,
-			   type:'hybrid'
+               type:'satellite',
+               heading: 90,
+               tilt: 45,
+               streetViewControl:true
               // subdomains:['mt0','mt1','mt2','mt3']
-            })
-
+            });
+            var hibrido = L.gridLayer.googleMutant({
+               maxZoom: 125,
+               transparent: true,
+               type:'hybrid',
+               heading: 90,
+               tilt: 45,
+               streetViewControl:true
+              // subdomains:['mt0','mt1','mt2','mt3']
+            });
           
-            var grupo_BASE = {'Raster IGN':ignraster,'Catastro':catastroBase,'Ortofoto PNOA':Spain_PNOA_Ortoimagen,'MDT pendientes':Spain_MDT_Pendientes,'Google satelite':hibrido};
-            var overlay = { 'IGNBASE':igntodo,  'Limites Adm.':administrativo,'Openmap':openmap};
+            var grupo_BASE = {'Raster IGN':ignraster,'Catastro':catastroBase,'Ortofoto PNOA':Spain_PNOA_Ortoimagen,'MDT pendientes':Spain_MDT_Pendientes,
+                              'Google satelite':satelite,'Google hibrido':hibrido };
+            var overlay = {'IGNBASE':igntodo, 'Openmap':openmap};
            
             map.addControl(new L.Control.Layers( overlay,grupo_BASE, {position:'topleft'}));
             L.control.scale({imperial:false}).addTo(map);
