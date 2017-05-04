@@ -439,6 +439,13 @@ function ortoOcaso(e) {
 	$("#panelinfo").collapsible('expand');	 
 }
      function initMap() {
+         function capturePhotoCamera() {
+          
+             navigator.camera.getPicture(onSuccess, onFail, { quality: 50,  sourceType:Camera.PictureSourceType.CAMERA
+                                                             ,destinationType:Camera.DestinationType.FILE_URI });
+                      
+     
+        }
          function capturePhoto() {
           // Take picture using device camera and retrieve image as base64-encoded string
             // pictureSource=navigator.Camera.PictureSourceType;
@@ -488,6 +495,7 @@ function ortoOcaso(e) {
          
          
              function onFail(message) {
+                  console.log('Error al recuperar/tomar la foto: ' + message);
                   alert('Failed because: ' + message);
                 }
 
@@ -881,12 +889,22 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
 			 
 			 map.on('locationfound', onLocationFound);
              map.on('locationerror', onLocationError);
+         
 			 $("#locate").click(function(e) {
 			        L.DomEvent.stopPropagation(e);
 					map.locate({setView: true, maxZoom:18,enableHighAccuracy:true});   
                     //enableHighAccuracy:true					
             });
           
+            
+             $("#Tfoto").click(function(e) {
+                    $.mobile.loading( 'show', { theme: "a", text: "Cargando Foto...", textonly: false,textVisible:true });
+			        L.DomEvent.stopPropagation(e);
+                    capturePhotoCamera();
+                    setTimeout(function() { $.mobile.loading( 'hide'); }, 3000);
+             
+            });
+         
              $("#foto").click(function(e) {
                     $.mobile.loading( 'show', { theme: "a", text: "Cargando Foto...", textonly: false,textVisible:true });
 			        L.DomEvent.stopPropagation(e);
@@ -894,69 +912,69 @@ var Spain_MapasrasterIGN = L.tileLayer.wms('http://www.ign.es/wms-inspire/mapa-r
                     setTimeout(function() { $.mobile.loading( 'hide'); }, 3000);
                
 
-                 
-                 
             });
 	  
-             $("#localizarfoto").click(function(e) {
+             $("#localizafoto").click(function(e) {
                   L.DomEvent.stopPropagation(e);
                   var image = document.getElementById('imagen');
                   foto = new Image();
                   foto.src = image.src;
-               EXIF.getData(foto, function () {
+                  console.log(image.src);
+                  EXIF.getData(foto, function () {
 
-                var allMetaData = EXIF.getAllTags(foto);
-                
-                $("#metadata").empty();
-                
-                if (allMetaData===undefined || allMetaData===null || allMetaData=={} ) return;
-                var allMetaDataSpan = document.getElementById("metadata");
-                var latitude = EXIF.getTag(foto,"GPSLatitude");
-                if (latitude===undefined || latitude ===null ) return;
+                    var allMetaData = EXIF.getAllTags(foto);
 
-                var longitude =  EXIF.getTag(foto,"GPSLongitude");
+                    $("#metadata").empty();
 
-                var reflong = EXIF.getTag(foto,"GPSLongitudeRef");
-                var reflat = EXIF.getTag(foto,"GPSLatitudeRef");
+                    if (allMetaData===undefined || allMetaData===null || allMetaData=={} ) return;
+                    var allMetaDataSpan = document.getElementById("metadata");
+                    var latitude = EXIF.getTag(foto,"GPSLatitude");
+                    if (latitude===undefined || latitude ===null ) return;
+
+                    var longitude =  EXIF.getTag(foto,"GPSLongitude");
+
+                    var reflong = EXIF.getTag(foto,"GPSLongitudeRef");
+                    var reflat = EXIF.getTag(foto,"GPSLatitudeRef");
 
 
-                allMetaDataSpan.innerHTML = JSON.stringify(allMetaData, null, "\t");
-                allMetaDataSpan.innerHTML = latitude +"/"+ longitude;
-               
-                var grados = ( latitude [2] / 60 + latitude[1] ) / 60;
-                var lat = grados + latitude[0];
-                grados = ( longitude [2] / 60 + longitude[1] ) / 60;
-                var lng=  grados  + longitude[0];
+                    allMetaDataSpan.innerHTML = JSON.stringify(allMetaData, null, "\t");
+                    allMetaDataSpan.innerHTML = latitude +"/"+ longitude;
 
-                if (reflong=="W" ) {
-                    lng = lng * (-1);
-                }
-                if (reflat=="S" ) {   
-                    lat = lat * (-1);
-                }
-                console.log (lat+"/"+lng);
+                    var grados = ( latitude [2] / 60 + latitude[1] ) / 60;
+                    var lat = grados + latitude[0];
+                    grados = ( longitude [2] / 60 + longitude[1] ) / 60;
+                    var lng=  grados  + longitude[0];
 
-                var coor_4326 =[];
-                coor_4326=[lng,lat];
+                    if (reflong=="W" ) {
+                        lng = lng * (-1);
+                    }
+                    if (reflat=="S" ) {   
+                        lat = lat * (-1);
+                    }
+                    console.log (lat+"/"+lng);
 
-                var b = L.latLng(coor_4326[1],coor_4326[0]).toBounds(20);
-                var pt = L.latLng(coor_4326[1],coor_4326[0]);
-                
-                var imageUrl = this.src;
-                              imageBounds = b;
-                 // console.log(imageUrl);
-                var texto =  "<b>Esta foto esta en este punto <br> Latitud: "+pt.lat+"<br>"+ " Longitud: "+ pt.lng +"<hr>"+  "<img src=" +this.src+  " id='imagen1' "  +                   " alt='foto1' style='width:75px;height:75px;'>";
-                if (marcaFoto)
-                   map.removeLayer(marcaFoto);
-                if (photoMap)
-                  map.removeLayer(photoMap);
-                marcaFoto = L.marker(pt).addTo(map).bindPopup(texto).openPopup();
-                photoMap = L.imageOverlay(imageUrl, imageBounds).addTo(map);
-                map.setView(pt,12);
+                    var coor_4326 =[];
+                    coor_4326=[lng,lat];
+
+                    var b = L.latLng(coor_4326[1],coor_4326[0]).toBounds(20);
+                    var pt = L.latLng(coor_4326[1],coor_4326[0]);
+
+                    var imageUrl = this.src;
+                                  imageBounds = b;
+                     // console.log(imageUrl);
+                    var texto =  "<b>Esta foto esta en este punto <br> Latitud: "+pt.lat+"<br>"+ " Longitud: "+ pt.lng +"<hr>"+  "<img src=" +this.src+  " id='imagen1' "  +                   " alt='foto1' style='width:75px;height:75px;'>";
+                    if (marcaFoto)
+                       map.removeLayer(marcaFoto);
+                    if (photoMap)
+                      map.removeLayer(photoMap);
+                    marcaFoto = L.marker(pt).addTo(map).bindPopup(texto).openPopup();
+                    photoMap = L.imageOverlay(imageUrl, imageBounds).addTo(map);
+                    map.setView(pt,12);
 
 
 
               });
+                 
              });
 
 	        
