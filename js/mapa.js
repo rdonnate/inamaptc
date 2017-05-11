@@ -441,8 +441,8 @@ function ortoOcaso(e) {
      function initMap() {
          function capturePhotoCamera() {
           
-             navigator.camera.getPicture(onSuccess, onFail, { quality: 50,  sourceType:Camera.PictureSourceType.CAMERA
-                                                             ,destinationType:Camera.DestinationType.FILE_URI });
+             navigator.camera.getPicture(onSuccess, onFail, { quality: 50,  sourceType:Camera.PictureSourceType.CAMERA,
+                                                              destinationType:Camera.DestinationType.FILE_URI });
                       
      
         }
@@ -450,7 +450,7 @@ function ortoOcaso(e) {
           // Take picture using device camera and retrieve image as base64-encoded string
             // pictureSource=navigator.Camera.PictureSourceType;
             // destinationType=navigator.Camera.DestinationType;
-             navigator.camera.getPicture(onSuccess, onFail, { quality: 50,  sourceType:Camera.PictureSourceType.PHOTOLIBRARY ,destinationType:Camera.DestinationType.FILE_URI });
+             navigator.camera.getPicture(onSuccess, onFail, { quality: 50,  sourceType:Camera.PictureSourceType.PHOTOLIBRARY, destinationType:Camera.DestinationType.FILE_URI });
                       
      
         }
@@ -1238,19 +1238,25 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
                streetViewControl:true
               // subdomains:['mt0','mt1','mt2','mt3']
             });
+             var terrain = L.gridLayer.googleMutant({
+               maxZoom: 125,
+               transparent: true,
+               type:'terrain'
+               
+              // subdomains:['mt0','mt1','mt2','mt3']
+            });
             var hibrido = L.gridLayer.googleMutant({
                maxZoom: 125,
                transparent: true,
                type:'hybrid',
                heading: 90,
                tilt: 45,
-               streetViewControl:true
+               streetViewControl:true,
               // subdomains:['mt0','mt1','mt2','mt3']
             });
           
-            var grupo_BASE = {'Raster IGN':ignraster,'Catastro':catastroBase,'Ortofoto PNOA':Spain_PNOA_Ortoimagen,'MDT pendientes':Spain_MDT_Pendientes,
-                              'Google satelite':satelite,'Google hibrido':hibrido };
-            var overlay = {'IGNBASE':igntodo, 'Openmap':openmap};
+            var grupo_BASE = {'IGN BASE':igntodo,'Raster IGN':ignraster,'Openmap':openmap,'Catastro':catastroBase,'Ortofoto PNOA':Spain_PNOA_Ortoimagen,'Google satelite':satelite,'Google hibrido':hibrido,'Google Terrain':terrain };
+            var overlay = {};
            
             map.addControl(new L.Control.Layers( overlay,grupo_BASE, {position:'topleft'}));
             L.control.scale({imperial:false}).addTo(map);
