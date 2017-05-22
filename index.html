@@ -32,6 +32,10 @@
 
   <!-- Load Esri Leaflet from CDN -->
   <script src="https://unpkg.com/esri-leaflet@2.0.8"></script>
+   <!-- Load Esri legend -->
+    <script src="//unpkg.com/esri-leaflet-renderers@2.0.4/dist/esri-leaflet-renderers-debug.js"></script>
+    <script src="js/legend.js"></script>
+    
 <!--   <script src="http://cdn.jsdelivr.net/leaflet.esri/2.0.0-beta.7/esri-leaflet.js"></script>-->
    <script type="text/javascript" src="http://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js"></script> 
    <link rel="stylesheet" href="http://cdn.jsdelivr.net/leaflet.esri.geocoder/2.0.2/esri-leaflet-geocoder.css">
@@ -121,7 +125,9 @@
 							  <input type="range" name="slidercotos1" id="slidercotos1" value="1" min="0" max="1" step="0.1"/>						  
 							  <input type="range" name="slidercotos2" id="slidercotos2" value="1" min="0" max="1" step="0.1"/>		
 							</div>
-						  </div>				 
+						  </div>	
+                          <hr>
+                          <div id="legend"></div>
 						
 	    </div>
 		

@@ -1312,6 +1312,25 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
           useCors: false,
 		  attribution: 'Cotos Aragon.- INAGA'});
           capaConsulta.addTo(map);
+         
+         
+         // legend
+         
+        capaConsulta.legend(function(error, legend){
+        if(!error) {
+        var html = '<ul>';
+        for(var i = 0, len = legend.layers.length; i < len; i++) {
+            html += '<li><strong>' + legend.layers[i].layerName + '</strong><ul>';
+            for(var j = 0, jj = legend.layers[i].legend.length; j < jj; j++){
+                html += L.Util.template('<li><img width="{width}" height="{height}" src="data:{contentType};base64,{imageData}"><span>{label}</span></li>', legend.layers[i].legend[j]);
+            }
+            html += '</ul></li>';
+        }
+        html+='</ul>';
+        document.getElementById('legend').innerHTML = html;
+        }
+      });
+         
           
 		  
 		  var gisSearch = L.esri.Geocoding.mapServiceProvider({
