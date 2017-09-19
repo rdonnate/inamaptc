@@ -205,12 +205,7 @@
 
                            <img src="img/logoweb_Inaga_2.jpg"  id="imagen" alt="foto" style="width:48px;height:48px;"/>
                            
-
-                        
-
-                            
-                          
-							 <div id="metadata"n class="ui-field-contain">
+							 <div id="metadata" class="ui-field-contain">
                                 
                              </div>
 
@@ -244,8 +239,8 @@
 			 
 			  element = $('#footer');
 			  alturaFoot = element.height();
-			  element =$('#map');
-			 element.css("height", ventana_alto - ( altura) - alturaFoot-10); 
+			  element = $('#map');
+			  element.css("height", ventana_alto - (altura) - alturaFoot - 5); 
 			 $fecha=$('#fecha');
 			 if ($fecha[0].type!="date"){
 			       $.datepicker.regional['es'] = {
@@ -271,6 +266,7 @@
 			 }
 		     document.getElementById("fecha").value = hoy();
 			 touchScroll('panel');
+            
 			//logos();
 			 initMap(); 
 			 setTimeout(function(){ $.mobile.loading( 'hide'); }, 2000);

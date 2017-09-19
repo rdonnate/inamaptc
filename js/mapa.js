@@ -515,7 +515,7 @@ function ortoOcaso(e) {
 			 var marca = L.marker([latlng.lat, latlng.lng]).toGeoJSON();
 			 var buffer = pointBuffer (marca, 1/200, "kilometers", 72);
 			 var query = L.esri.query({
-							url:'https://idearagon.aragon.es/servicios/rest/services/INAGA/INAGA_Cotos_Caza/MapServer/',
+							url:'https://idearagon.aragon.es/servicios/rest/services/INAGA/INAGA_Cotos_Caza/MapServer/1',
 							useCors:false
 						});
 			 query.intersects(buffer);
@@ -1198,8 +1198,8 @@ var Andalucia_MapaToporaster10 = L.tileLayer.wms('http://www.ideandalucia.es/ser
 								crs:L.CRS.EPSG4326,
 								dataType: "jsonp",
 								attribution: '<a href="http://www.sedecatastro.gob.es/"" target="_blank">Direcci&oacute;n General de Catastro</a>',
-								maxZoom: 30};
-				var source = L.WMS.source("http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx", options);
+								maxZoom: 40};
+				var source = L.WMS.source("https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx", options);
 				var catastroBase = source.getLayer('Catastro');
 				
 					

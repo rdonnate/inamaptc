@@ -75,6 +75,13 @@ background-image: url("../img/ico_localizacion.png");
       overflow:auto;
       
 }
+
+.ovc {
+    width: 250px;
+    height: 290px;
+    overflow: scroll;
+}
+
 .info {
   padding: 1px;
   font-weight: bold;

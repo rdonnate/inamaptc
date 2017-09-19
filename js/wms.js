@@ -173,15 +173,19 @@ wms.Source = L.Layer.extend({
 
     'parseFeatureInfo': function(result, url) {
         // Hook to handle parsing AJAX response
-	   
+	   console.log(url);
         if (result == "error") {
             // AJAX failed, possibly due to CORS issues.
             // Try loading content in <iframe>.
             result = "<a href="+url+" target='_blank'>Ver Parcela en OVC</a>"+"<hr>"+"<iframe src='" + url + "' style='border:none' height='250' width='250'>";
-        } else {
-			 result = "<a href="+url+" target='_blank'>Ver Parcela en OVC</a>"+"<hr>";
+       /* else {
+			 result  "<a href="+url+" target='_blank'>Ver Parcela en OVC</a>"+"<hr><a href='javascript:window.history.back();'>&laquo; Volver atrás</a>";*/
 		}
-		
+		/*result = "<a href="+url+" target='_blank'>Ver Parcela en OVC</a>"+"<hr>"+"<iframe class='ovc' src='" + url + "' style='border:none'>";
+        
+        result='<a href="#popupBasic" data-rel="popup">Open Popup</a><div data-role="popup" id="popupBasic">';
+        result +="<a href="+url+" target='_self'>Ver Parcela en OVC</a>"+"<hr><a href='javascript:window.history.back();'>&laquo; Volver atrás</a>";
+        result += "</div>";*/
         return result;
     },
 
